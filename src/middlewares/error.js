@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const httpStatus = require('http-status');
+const httpCode = httpStatus.status;
 const config = require('../config/config');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
@@ -8,28 +9,32 @@ const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode =
-      error.statusCode || error instanceof mongoose.Error ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
+      error.statusCode || error instanceof mongoose.Error ? httpCode.BAD_REQUEST : httpCode.INTERNAL_SERVER_ERROR;
     const message = error.message || httpStatus[statusCode];
-    error = new ApiError(statusCode, message, error.errorCode, false, err.stack);
+    error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);
 };
 
 const errorHandler = (err, req, res, next) => {
-  let { statusCode, message, errorCode } = err;
+  let { statusCode, message, type, errors } = err;
   if (config.env === 'production' && !err.isOperational) {
-    statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-    message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
+    statusCode = httpCode.INTERNAL_SERVER_ERROR;
+    message = httpStatus[httpCode.INTERNAL_SERVER_ERROR];
   }
 
   res.locals.errorMessage = err.message;
 
   const response = {
     code: statusCode,
-    errorCode,
     message,
-    ...(config.env === 'dev' || (config.env === 'test' && { stack: err.stack })),
+    type,
+    errors,
   };
+
+  if (config.env === 'dev' || config.env === 'test') {
+    response.stack = err.stack;
+  }
 
   if (config.env === 'dev') {
     logger.error(err);
