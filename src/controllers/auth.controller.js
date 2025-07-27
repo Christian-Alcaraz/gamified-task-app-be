@@ -1,8 +1,7 @@
 const User = require('../models/user.model');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
-const httpCode = httpStatus.status;
 
 exports.register = async (req, res, next) => {
   try {
@@ -10,7 +9,7 @@ exports.register = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new ApiError(httpCode.BAD_REQUEST, 'Email already in use');
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already in use');
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -19,7 +18,7 @@ exports.register = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-    res.status(httpCode.CREATED).json({ user: user.toJSON() });
+    res.status(httpStatus.CREATED).json({ user: user.toJSON() });
   } catch (error) {
     console.error('Error in register:', error);
     next(error);

@@ -1,22 +1,24 @@
 const Joi = require('joi');
+const httpStatus = require('http-status').status;
+const ApiError = require('../utils/ApiError');
 const _ = require('lodash');
 
 const validate = (schema) => (req, res, next) => {
   const validSchema = _.pick(schema, ['params', 'query', 'body']);
   const object = _.pick(req, Object.keys(validSchema));
-
-  const { error } = Joi.compile(validSchema)
+  const { value, error } = Joi.compile(validSchema)
     .prefs({ errors: { label: 'key' }, abortEarly: false })
     .validate(object);
 
   if (error) {
-    return res.status(400).json({
-      message: error.details.map((details) => details.message).join(', '),
-      type: 'VALIDATION_ERROR',
-    });
+    const errorMessage = error.details
+      .map((details) => details.message)
+      .join(', ')
+      .replaceAll('"', '');
+    return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage, 'VALIDATION_ERROR'));
   }
-
-  next();
+  Object.assign(req, value);
+  return next();
 };
 
 module.exports = validate;
