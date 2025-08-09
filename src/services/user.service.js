@@ -7,10 +7,6 @@ const createUser = async (userBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
 
-  //   if (!userBody.password) {
-  //     userBody.password = stringUtils.generatePassword();
-  //   }
-
   const userId = new mongoose.Types.ObjectId();
   userBody.userType = USER_TYPE.USER;
   userBody._id = userId;

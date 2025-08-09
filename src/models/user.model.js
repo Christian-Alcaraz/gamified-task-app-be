@@ -38,7 +38,6 @@ const userSchema = mongoose.Schema(
       default: STATUS.ACTIVE,
       enum: STATUSES,
     },
-    // Identifier for still not having complete the additional properties filled (sex)
     // oauth: {
     //   serviceType: {
     //     type: String,
