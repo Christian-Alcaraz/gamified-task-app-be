@@ -1,26 +1,19 @@
-const User = require('../models/user.model');
 const httpStatus = require('http-status').status;
-const ApiError = require('../utils/ApiError');
-const bcrypt = require('bcryptjs');
+const { authService } = require('../services');
+const catchAsync = require('../utils/catchAsync');
 
-exports.register = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+const registerUser = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
+  const user = await authService.registerUser(email, password);
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already in use');
-    }
+  res.status(httpStatus.CREATED).send({ ...user.toJSON() });
+});
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
+  const user = await authService.loginUserWithEmailAndPassword(email, password);
 
-    const user = await User.create({
-      email,
-      password: hashedPassword,
-    });
-    res.status(httpStatus.CREATED).json({ user: user.toJSON() });
-  } catch (error) {
-    console.error('Error in register:', error);
-    next(error);
-  }
-};
+  res.status(httpStatus.OK).send({ ...user.toJSON() });
+});
+
+module.exports = { registerUser, loginUserWithEmailAndPassword };
