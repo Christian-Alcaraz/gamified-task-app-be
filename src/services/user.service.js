@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
+const { STATUS } = require('../constants');
 
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {

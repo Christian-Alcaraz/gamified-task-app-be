@@ -6,7 +6,7 @@ const { USER_TYPE } = require('../constants');
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await userService.getUserByEmail(email);
 
-  if (!user || !(await user.isPasswordMatch(password)) || user.userType === USER_TYPE.ADMIN) {
+  if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid email or password');
   }
 
