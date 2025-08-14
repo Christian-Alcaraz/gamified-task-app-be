@@ -2,8 +2,24 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const toJSON = require('./plugins/toJSON');
-const { USER_TYPE, USER_TYPES, STATUSES, STATUS, SEXES, OAUTH_TYPES } = require('../constants');
+const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES } = require('../constants');
 
+/**
+ * @typedef {Object} OAuth
+ * @property {OAUTH_TYPE} serviceType
+ * @property {mongoose.Types.ObjectId} _oauthId
+ */
+
+/**
+ * @typedef {Object} User
+ * @property {string} email
+ * @property {string} [password]
+ * @property {USER_TYPE} userType
+ * @property {STATUS} status
+ * @property {OAuth} [_oauthId]
+ */
+
+/** @type {mongoose.Schema<User>} */
 const userSchema = mongoose.Schema(
   {
     email: {
@@ -38,13 +54,13 @@ const userSchema = mongoose.Schema(
       default: STATUS.ACTIVE,
       enum: STATUSES,
     },
-    // oauth: {
-    //   serviceType: {
-    //     type: String,
-    //     enum: OAUTH_TYPES,
-    //   },
-    //   _oauthId: String,
-    // },
+    oauth: {
+      serviceType: {
+        type: String,
+        enum: OAUTH_TYPES,
+      },
+      _oauthId: String,
+    },
   },
   {
     timestamps: true,
@@ -71,6 +87,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+/** @type {mongoose.Model<User>} */
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
