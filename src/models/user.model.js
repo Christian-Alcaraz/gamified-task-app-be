@@ -14,7 +14,7 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES } = req
  * @typedef {Object} User
  * @property {string} email
  * @property {string} [password]
- * @property {USER_TYPE} userType
+ * @property {USER_TYPE} type
  * @property {STATUS} status
  * @property {OAuth} [_oauthId]
  */
@@ -44,7 +44,7 @@ const userSchema = mongoose.Schema(
       },
       private: true,
     },
-    userType: {
+    type: {
       type: String,
       default: USER_TYPE.USER,
       enums: USER_TYPES,
