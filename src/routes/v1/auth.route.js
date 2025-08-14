@@ -10,5 +10,6 @@ router.post('/register', validate(authValidation.register), authController.regis
 router.post('/login', validate(authValidation.login), authController.loginUserWithEmailAndPassword);
 
 router.use(authorize());
+router.get('/me', authController.me);
 
 module.exports = router;
