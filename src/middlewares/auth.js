@@ -1,7 +1,6 @@
 const passport = require('passport');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { STATES } = require('mongoose');
 const { STATUS } = require('../constants');
 const { Role } = require('../models');
 
