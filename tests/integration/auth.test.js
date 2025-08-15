@@ -65,6 +65,11 @@ describe('[Routes] Auth = /api/auth', () => {
       const res = await request(app).post('/api/v1/auth/login').send({ password: testUser.password });
       expect(res.status).toBe(httpStatus.BAD_REQUEST);
     });
+
+    it('should return 400 if password is not provided', async () => {
+      const res = await request(app).post('/api/v1/auth/login').send({ email: testUser.email });
+      expect(res.status).toBe(httpStatus.BAD_REQUEST);
+    });
   });
 
   describe('POST /register', () => {
