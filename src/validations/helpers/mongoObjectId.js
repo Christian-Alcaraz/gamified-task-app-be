@@ -7,6 +7,6 @@ const objectId = () =>
       return helpers.error('any.invalid');
     }
     return value; // valid
-  }, 'ObjectId validation');
+  }, 'MongoDb ObjectId validation');
 
 module.exports = objectId;
