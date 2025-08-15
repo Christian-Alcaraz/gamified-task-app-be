@@ -9,6 +9,8 @@
     "start:prod": "cross-env NODE_ENV=production node src/index.js",
     "test": "jest -i --colors --verbose --detectOpenHandles",
     "test:watch": "jest -i --watchAll",
+    "test:unit": "jest tests/unit -i --colors --verbose --detectOpenHandles",
+    "test:integration": "jest tests/integration -i --colors --verbose --detectOpenHandles",
     "coverage": "jest -i --coverage",
     "prettier": "prettier --write **/*.js"
   },
@@ -39,6 +41,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "chance": "^1.1.13",
     "cross-env": "^10.0.0",
     "jest": "^30.0.5",
