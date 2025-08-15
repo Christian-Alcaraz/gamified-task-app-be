@@ -3,17 +3,16 @@ const { Task } = require('../models');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { TASK_TYPE, TASK_STATUS } = require('../constants');
-const { Types } = require('mongoose');
+const mongoose = require('mongoose');
 
-/**
- * @typedef {import('../models/task.model').Task} Task
- */
+/** @typedef {import('../models/task.model').TaskDocument} TaskDocument */
+/** @typedef {import('../models/task.model').Task} Task */
 
 /**
  *
- * @param {Partial<Task>} taskBody
- * @param {Types.ObjectId} userId
- * @returns {Promise<Task>}
+ * @param {Partial<Task>} taskBody task document body
+ * @param {mongoose.Types.ObjectId} userId task creator id
+ * @returns {Promise<TaskDocument>}
  */
 const createUserTask = async (taskBody, userId) => {
   const body = {
@@ -27,10 +26,10 @@ const createUserTask = async (taskBody, userId) => {
 
 /**
  *
- * @param {Partial<Task>} taskBody
- * @param {Types.ObjectId} taskId
- * @param {Types.ObjectId} userId
- * @returns {Promise<Task>}
+ * @param {Partial<Task>} taskBody task new document body
+ * @param {mongoose.Types.ObjectId} taskId task document id
+ * @param {mongoose.Types.ObjectId} userId task creator id
+ * @returns {Promise<TaskDocument>}
  */
 const updateUserTaskById = async (taskBody, taskId, userId) => {
   const task = await getUserTaskById(taskId, userId);
@@ -46,9 +45,9 @@ const updateUserTaskById = async (taskBody, taskId, userId) => {
 
 /**
  *
- * @param {Types.ObjectId} taskId
- * @param {Types.ObjectId} userId
- * @returns {Promise<>}
+ * @param {mongoose.Types.ObjectId} taskId task document id
+ * @param {mongoose.Types.ObjectId} userId task creator id
+ * @returns {Promise<TaskDocument>}
  */
 const getUserTaskById = async (taskId, userId) => {
   return Task.findOne({
@@ -59,33 +58,33 @@ const getUserTaskById = async (taskId, userId) => {
 
 /**
  *
- * @param {Types.ObjectId} userId
- * @param {TASK_TYPE | null} type
- * @returns {Promise<Task[]>}
+ * @param {mongoose.Types.ObjectId} userId task creator id
+ * @param {TASK_TYPE} [taskType]  task type to filter by
+ * @returns {Promise<TaskDocument[]>}
  */
-const getUserTasks = async (userId, type) => {
+const getUserTasks = async (userId, taskType) => {
   const searchQuery = { _userId: userId };
 
-  if (type) {
-    searchQuery['type'] = type;
+  if (taskType) {
+    searchQuery['type'] = taskType;
   }
   return await Task.find(searchQuery);
 };
 
 /**
- * @param {Types.ObjectId} taskId
- * @param {Types.ObjectId} userId
- * @param {TASK_STATUS} status
- * @returns {Promise<Task>}
+ * @param {mongoose.Types.ObjectId} taskId task document id
+ * @param {mongoose.Types.ObjectId} userId task creator id
+ * @param {TASK_STATUS} [taskStatus] task status to update
+ * @returns {Promise<TaskDocument>}
  */
-const patchUserTaskStatusById = async (taskId, userId, status) => {
+const patchUserTaskStatusById = async (taskId, userId, taskStatus) => {
   const task = await getUserTaskById(taskId, userId);
 
   if (!task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
 
-  task.status = status;
+  task.status = taskStatus;
   await task.save();
   return task;
 };

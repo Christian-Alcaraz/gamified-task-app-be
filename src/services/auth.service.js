@@ -1,7 +1,17 @@
 const userService = require('./user.service');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
+const { User } = require('../models');
 
+/** @typedef {import('../models/user.model').User} User */
+/** @typedef {import('../models/user.model').UserDocument} UserDocument */
+
+/**
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<UserDocument>}
+ */
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await userService.getUserByEmail(email);
 
@@ -17,6 +27,12 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
+/**
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<UserDocument>}
+ */
 const registerUser = async (email, password) => {
   const isUserEmailTaken = await userService.getUserByEmail(email);
 

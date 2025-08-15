@@ -2,16 +2,15 @@ const { User } = require('../models');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { STATUS, USER_TYPE } = require('../constants');
-const { Types } = require('mongoose');
+const mongoose = require('mongoose');
 
-/**
- * @typedef {import('../models/user.model').User} User
- */
+/** @typedef {import('../models/user.model').User} User */
+/** @typedef {import('../models/user.model').UserDocument} UserDocument */
 
 /**
  *
- * @param {Partial<User>} userBody
- * @returns {Promise<User>}
+ * @param {Partial<User>} userBody user document body
+ * @returns {Promise<UserDocument>}
  */
 const createUser = async (userBody) => {
   try {
@@ -19,7 +18,7 @@ const createUser = async (userBody) => {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
     }
 
-    const userId = new Types.ObjectId();
+    const userId = new mongoose.Types.ObjectId();
     userBody.type = USER_TYPE.USER;
     userBody._id = userId;
 
@@ -30,12 +29,12 @@ const createUser = async (userBody) => {
 };
 
 /**
- * @param {Types.ObjectId} userId
- * @param {Partial<User>} updateBody
- * @returns {Promise<User>}
+ * @param {mongoose.Types.ObjectId} userId user id
+ * @param {Partial<User>} userBody user new document body
+ * @returns {Promise<UserDocument>}
  */
 const updateUserById = async (userId, userBody) => {
-  const user = await User.findById(userId);
+  const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -47,8 +46,8 @@ const updateUserById = async (userId, userBody) => {
 
 /**
  *
- * @param {Types.ObjectId} userId
- * @returns {Promise<User>}
+ * @param {mongoose.Types.ObjectId} userId user document id
+ * @returns {Promise<UserDocument>}
  */
 const getUserById = async (userId) => {
   return User.findOne({
@@ -59,9 +58,9 @@ const getUserById = async (userId) => {
 
 /**
  *
- * @param {USER_TYPE} [type]
- * @param {STATUS} [userStatus]
- * @returns
+ * @param {USER_TYPE} [userType] user type
+ * @param {STATUS} [userStatus] user status
+ * @returns {Promise<UserDocument[]>}
  */
 const getUsers = async (userType, userStatus) => {
   const searchQuery = {
@@ -76,33 +75,33 @@ const getUsers = async (userType, userStatus) => {
 
 /**
  *
- * @param {string} id
- * @param {string} service //Todo: Add enum consts
+ * @param {string} oauthId oauth id
+ * @param {string} oauthService oauth service type //Todo: Add enum consts
  * @param {string} email
- * @returns {Promise<User>}
+ * @returns {Promise<UserDocument>}
  */
-const getUserByOAuth = async (id, service, email) => {
+const getUserByOAuth = async (oauthId, oauthService, email) => {
   return User.findOne({
-    'oauth.serviceType': service,
-    'oauth._oauthId': id,
+    'oauth.serviceType': oauthService,
+    'oauth._oauthId': oauthId,
     email,
   });
 };
 
 /**
  *
- * @param {Types.ObjectId} userId
- * @param {STATUS} status
- * @returns
+ * @param {mongoose.Types.ObjectId} userId user document id
+ * @param {STATUS} userStatus user status to update
+ * @returns {Promise<UserDocument>}
  */
-const patchUserStatusById = async (userId, status) => {
+const patchUserStatusById = async (userId, userStatus) => {
   const user = await getUserById(userId);
 
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  user.status = status;
+  user.status = userStatus;
   await user.save();
   return user;
 };
@@ -110,7 +109,7 @@ const patchUserStatusById = async (userId, status) => {
 /**
  *
  * @param {string} email
- * @returns {Promise<User>}
+ * @returns {Promise<UserDocument>}
  */
 const getUserByEmail = async (email) => {
   return User.findOne({ email, status: STATUS.ACTIVE });

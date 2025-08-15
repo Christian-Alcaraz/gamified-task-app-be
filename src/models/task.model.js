@@ -23,6 +23,8 @@ const {
  * @property {mongoose.Types.ObjectId} _userId
  */
 
+/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Task> & Task} TaskDocument */
+
 /** @type {mongoose.Schema<Task>} */
 const taskSchema = new mongoose.Schema(
   {

@@ -19,6 +19,8 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES } = req
  * @property {OAuth} [oauth]
  */
 
+/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, User> & User} UserDocument */
+
 /** @type {mongoose.Schema<User>} */
 const userSchema = mongoose.Schema(
   {
