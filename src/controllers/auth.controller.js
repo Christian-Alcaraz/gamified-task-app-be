@@ -11,6 +11,7 @@ const registerUser = catchAsync(async (req, res) => {
 });
 
 // Todo: Create cache db for logged in users for activity?
+
 const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);

@@ -1,8 +1,7 @@
 const passport = require('passport');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { STATUS } = require('../constants');
-const { Role } = require('../models');
 
 const authorize =
   (...userTypes) =>
@@ -20,14 +19,14 @@ const authorize =
         );
       }
 
-      const role = await Role.findById(req.user._roleId);
-      if (role) {
-        req.permissions = role.permissions;
-      }
+      // const role = await Role.findById(req.user._roleId);
+      // if (role) {
+      //   req.permissions = role.permissions;
+      // }
 
-      if (userTypes?.length && !userTypes.includes(req.user.userType)) {
-        return next(new ApiError(httpStatus.FORBIDDEN, 'Access Forbidden'));
-      }
+      // if (userTypes?.length && !userTypes.includes(req.user.userType)) {
+      //   return next(new ApiError(httpStatus.FORBIDDEN, 'Access Forbidden'));
+      // }
 
       next();
     })(req, res, next);

@@ -3,7 +3,6 @@ const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { STATUS, USER_TYPE } = require('../constants');
 const { Types } = require('mongoose');
-const { default: status } = require('http-status');
 
 /**
  * @typedef {import('../models/user.model').User} User
@@ -15,15 +14,19 @@ const { default: status } = require('http-status');
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  try {
+    if (await User.isEmailTaken(userBody.email)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+    }
+
+    const userId = new Types.ObjectId();
+    userBody.type = USER_TYPE.USER;
+    userBody._id = userId;
+
+    return User.create(userBody);
+  } catch (e) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Something went wrong while creating user', false, e);
   }
-
-  const userId = new mongoose.Types.ObjectId();
-  userBody.type = USER_TYPE.USER;
-  userBody._id = userId;
-
-  return User.create(userBody);
 };
 
 /**

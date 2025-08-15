@@ -6,6 +6,10 @@ const authController = require('../../controllers/auth.controller');
 
 const router = express.Router();
 
+router.get('/test-error', (req, res, next) => {
+  next(new ApiError(httpStatus.BAD_REQUEST, 'Test error'));
+});
+
 router.post('/register', validate(authValidation.register), authController.registerUser);
 router.post('/login', validate(authValidation.login), authController.loginUserWithEmailAndPassword);
 

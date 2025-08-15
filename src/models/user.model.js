@@ -16,7 +16,7 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES } = req
  * @property {string} [password]
  * @property {USER_TYPE} type
  * @property {STATUS} status
- * @property {OAuth} [_oauthId]
+ * @property {OAuth} [oauth]
  */
 
 /** @type {mongoose.Schema<User>} */
