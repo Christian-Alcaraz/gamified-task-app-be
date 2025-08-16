@@ -25,7 +25,7 @@ const updateUserTaskById = catchAsync(async (req, res, next) => {
 const patchUserTaskStatusById = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const taskId = req.params.taskId;
-  const status = req.query.status;
+  const status = req.body.status;
 
   const task = await taskService.patchUserTaskStatusById(taskId, userId, status);
   res.status(httpStatus.OK).send(task);
