@@ -11,11 +11,11 @@ const routes = [
     router: authRouter,
   },
   {
-    path: '/task',
+    path: '/tasks',
     router: taskRouter,
   },
   {
-    path: '/user',
+    path: '/users',
     router: userRouter,
   },
 ];
