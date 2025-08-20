@@ -22,15 +22,6 @@ const updateUserTaskById = catchAsync(async (req, res, next) => {
   res.status(httpStatus.OK).send(task);
 });
 
-const patchUserTaskStatusById = catchAsync(async (req, res, next) => {
-  const userId = req.user.id;
-  const taskId = req.params.taskId;
-  const status = req.body.status;
-
-  const task = await taskService.patchUserTaskStatusById(taskId, userId, status);
-  res.status(httpStatus.OK).send(task);
-});
-
 const getUserTaskById = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const taskId = req.params.taskId;
@@ -50,7 +41,6 @@ const getUserTasks = catchAsync(async (req, res, next) => {
 module.exports = {
   createUserTask,
   updateUserTaskById,
-  patchUserTaskStatusById,
   getUserTaskById,
   getUserTasks,
 };

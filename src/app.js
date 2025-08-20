@@ -66,7 +66,7 @@ if (['production', 'staging'].includes(config.env)) {
 }
 
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  next(new ApiError(httpStatus.NOT_FOUND, 'Request not found'));
 });
 
 app.use(errorConverter);

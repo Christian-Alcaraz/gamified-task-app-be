@@ -11,6 +11,7 @@ const TaskBody = {
     .description('Task type'),
   status: Joi.string().valid(...TASK_STATUSES),
   difficulty: Joi.string().valid(...TASK_DIFFICULTIES),
+  completed: Joi.boolean().optional().description('Task completed'),
   frequency: Joi.when('type', {
     is: TASK_TYPE.DAILIES,
     then: Joi.string()
@@ -36,17 +37,17 @@ const validation = {
     }),
     body: Joi.object().keys(TaskBody),
   },
-  patchUserTaskStatusById: {
-    params: Joi.object().keys({
-      taskId: JoiObjectId().required().description('Task ID'),
-    }),
-    body: Joi.object().keys({
-      status: Joi.string()
-        .valid(...TASK_STATUSES)
-        .required()
-        .description('Task status'),
-    }),
-  },
+  // patchUserTaskStatusById: {
+  //   params: Joi.object().keys({
+  //     taskId: JoiObjectId().required().description('Task ID'),
+  //   }),
+  //   body: Joi.object().keys({
+  //     status: Joi.string()
+  //       .valid(...TASK_STATUSES)
+  //       .required()
+  //       .description('Task status'),
+  //   }),
+  // },
   getUserTaskById: {
     params: Joi.object().keys({
       taskId: JoiObjectId().required().description('Task ID'),

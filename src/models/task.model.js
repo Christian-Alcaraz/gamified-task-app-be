@@ -16,7 +16,7 @@ const {
  * @property {string} name
  * @property {string} [description]
  * @property {TASK_TYPE} type
- * @property {TASK_STATUS} [status]
+ * @property {boolean} completed
  * @property {TASK_DIFFICULTY} [difficulty]
  * @property {TASK_FREQUENCY} [frequency]
  * @property {Date} [deadlineDate]
@@ -40,10 +40,9 @@ const taskSchema = new mongoose.Schema(
       required: true,
       enums: TASK_TYPES,
     },
-    status: {
-      type: String,
-      default: TASK_STATUS.ACTIVE,
-      enum: TASK_STATUSES,
+    completed: {
+      type: Boolean,
+      default: false,
     },
     difficulty: {
       type: String,

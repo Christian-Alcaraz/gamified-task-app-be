@@ -13,7 +13,7 @@ router
   .get(validate(taskValidation.getUserTasks), taskController.getUserTasks)
   .post(validate(taskValidation.createUserTask), taskController.createUserTask);
 
-router.patch('/:taskId/status', validate(taskValidation.patchUserTaskStatusById), taskController.patchUserTaskStatusById);
+// router.patch('/:taskId/status', validate(taskValidation.patchUserTaskStatusById), taskController.patchUserTaskStatusById);
 
 router
   .route('/:taskId')

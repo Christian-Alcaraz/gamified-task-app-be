@@ -71,24 +71,6 @@ const getUserTasks = async (userId, taskType) => {
   return await Task.find(searchQuery);
 };
 
-/**
- * @param {mongoose.Types.ObjectId} taskId task document id
- * @param {mongoose.Types.ObjectId} userId task creator id
- * @param {TASK_STATUS} [taskStatus] task status to update
- * @returns {Promise<TaskDocument>}
- */
-const patchUserTaskStatusById = async (taskId, userId, taskStatus) => {
-  const task = await getUserTaskById(taskId, userId);
-
-  if (!task) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
-  }
-
-  task.status = taskStatus;
-  await task.save();
-  return task;
-};
-
 // Todo: Have separate Delete Task method; this method will be used to queue the task for deletion
 
 module.exports = {
@@ -96,5 +78,4 @@ module.exports = {
   updateUserTaskById,
   getUserTaskById,
   getUserTasks,
-  patchUserTaskStatusById,
 };
