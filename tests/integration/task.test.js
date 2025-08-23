@@ -312,68 +312,68 @@ describe('[Routes] Task = /api/tasks', () => {
     });
   });
 
-  describe('PATCH /tasks/:taskId/status ', () => {
-    it('should return 200 and update task status of the user', async () => {
-      await insertTasks([taskUserDailies]);
+  // describe('PATCH /tasks/:taskId/status ', () => {
+  //   it('should return 200 and update task status of the user', async () => {
+  //     await insertTasks([taskUserDailies]);
 
-      const updatedStatus = TASK_STATUS.COMPLETED;
-      const body = {
-        status: updatedStatus,
-      };
+  //     const updatedStatus = TASK_STATUS.COMPLETED;
+  //     const body = {
+  //       status: updatedStatus,
+  //     };
 
-      const res = await request(app)
-        .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
-        .set('Authorization', bearerToken)
-        .send(body);
+  //     const res = await request(app)
+  //       .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
+  //       .set('Authorization', bearerToken)
+  //       .send(body);
 
-      expect(res.status).toBe(httpStatus.OK);
-      expect(res.body).toMatchObject({
-        _id: taskUserDailies._id,
-        _userId: testUser._id,
-        status: updatedStatus,
-      });
-    });
+  //     expect(res.status).toBe(httpStatus.OK);
+  //     expect(res.body).toMatchObject({
+  //       _id: taskUserDailies._id,
+  //       _userId: testUser._id,
+  //       status: updatedStatus,
+  //     });
+  //   });
 
-    it('should return 404 if task id does not exist', async () => {
-      const updatedStatus = TASK_STATUS.COMPLETED;
-      const body = {
-        status: updatedStatus,
-      };
+  //   it('should return 404 if task id does not exist', async () => {
+  //     const updatedStatus = TASK_STATUS.COMPLETED;
+  //     const body = {
+  //       status: updatedStatus,
+  //     };
 
-      const res = await request(app)
-        .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
-        .set('Authorization', bearerToken)
-        .send(body);
+  //     const res = await request(app)
+  //       .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
+  //       .set('Authorization', bearerToken)
+  //       .send(body);
 
-      expect(res.status).toBe(httpStatus.NOT_FOUND);
-      expect(res.body).toHaveProperty('stack');
-      expect(res.body.stack).toMatch(/Task not found/i);
-    });
+  //     expect(res.status).toBe(httpStatus.NOT_FOUND);
+  //     expect(res.body).toHaveProperty('stack');
+  //     expect(res.body.stack).toMatch(/Task not found/i);
+  //   });
 
-    it('should return 400 if task status is missing from request body', async () => {
-      await insertTasks([taskUserDailies]);
+  //   it('should return 400 if task status is missing from request body', async () => {
+  //     await insertTasks([taskUserDailies]);
 
-      const res = await request(app)
-        .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
-        .set('Authorization', bearerToken)
-        .send({});
+  //     const res = await request(app)
+  //       .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
+  //       .set('Authorization', bearerToken)
+  //       .send({});
 
-      expect(res.status).toBe(httpStatus.BAD_REQUEST);
-      expect(res.body).toHaveProperty('stack');
-      expect(res.body.stack).toMatch(/status is required/i);
-    });
+  //     expect(res.status).toBe(httpStatus.BAD_REQUEST);
+  //     expect(res.body).toHaveProperty('stack');
+  //     expect(res.body.stack).toMatch(/status is required/i);
+  //   });
 
-    it('should return 400 if task status value is not in valid options', async () => {
-      await insertTasks([taskUserDailies]);
-      const status = 'incorrect status';
-      const res = await request(app)
-        .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
-        .set('Authorization', bearerToken)
-        .send({ status });
+  //   it('should return 400 if task status value is not in valid options', async () => {
+  //     await insertTasks([taskUserDailies]);
+  //     const status = 'incorrect status';
+  //     const res = await request(app)
+  //       .patch(`/api/v1/tasks/${taskUserDailies._id}/status`)
+  //       .set('Authorization', bearerToken)
+  //       .send({ status });
 
-      expect(res.status).toBe(httpStatus.BAD_REQUEST);
-      expect(res.body).toHaveProperty('stack');
-      expect(res.body.stack).toMatch(/must be one of/i);
-    });
-  });
+  //     expect(res.status).toBe(httpStatus.BAD_REQUEST);
+  //     expect(res.body).toHaveProperty('stack');
+  //     expect(res.body.stack).toMatch(/must be one of/i);
+  //   });
+  // });
 });

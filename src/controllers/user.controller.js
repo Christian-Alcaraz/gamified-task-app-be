@@ -2,8 +2,6 @@ const httpStatus = require('http-status').status;
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
 
-//Todo: User Controller Methods
-
 const createUser = catchAsync(async (req, res, next) => {
   const userBody = req.body;
   const user = await userService.createUser(userBody);
