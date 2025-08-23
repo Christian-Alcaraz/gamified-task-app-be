@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
  * @param {mongoose.Types.ObjectId} userId task creator id
  * @returns {Promise<TaskDocument>}
  */
-const createUserTask = async (taskBody, userId) => {
+const createTask = async (taskBody, userId) => {
   const body = {
     ...taskBody,
   };
@@ -31,8 +31,8 @@ const createUserTask = async (taskBody, userId) => {
  * @param {mongoose.Types.ObjectId} userId task creator id
  * @returns {Promise<TaskDocument>}
  */
-const updateUserTaskById = async (taskBody, taskId, userId) => {
-  const task = await getUserTaskById(taskId, userId);
+const updateTaskById = async (taskBody, taskId, userId) => {
+  const task = await getTaskById(taskId, userId);
 
   if (!task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
@@ -49,7 +49,7 @@ const updateUserTaskById = async (taskBody, taskId, userId) => {
  * @param {mongoose.Types.ObjectId} userId task creator id
  * @returns {Promise<TaskDocument>}
  */
-const getUserTaskById = async (taskId, userId) => {
+const getTaskById = async (taskId, userId) => {
   return Task.findOne({
     _id: taskId,
     _userId: userId,
@@ -59,23 +59,38 @@ const getUserTaskById = async (taskId, userId) => {
 /**
  *
  * @param {mongoose.Types.ObjectId} userId task creator id
- * @param {TASK_TYPE} [taskType]  task type to filter by
+ * @param {Object} [query]  task type to filter by
  * @returns {Promise<TaskDocument[]>}
  */
-const getUserTasks = async (userId, taskType) => {
+const getTasks = async (userId, query) => {
+  const { type, completed, deadlineDate } = query;
+
+  if (type && type === TASK_TYPE.DAILIES && deadlineDate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Deadline date is forbidden for Dailies tasks');
+  }
+
   const searchQuery = { _userId: userId };
 
-  if (taskType) {
-    searchQuery['type'] = taskType;
+  if (type) {
+    searchQuery['type'] = type;
   }
+
+  if (typeof completed === 'boolean') {
+    searchQuery['completed'] = completed;
+  }
+
+  if (deadlineDate === 'exists') {
+    searchQuery['deadlineDate'] = { $exists: true, $ne: null };
+  }
+
   return await Task.find(searchQuery);
 };
 
 // Todo: Have separate Delete Task method; this method will be used to queue the task for deletion
 
 module.exports = {
-  createUserTask,
-  updateUserTaskById,
-  getUserTaskById,
-  getUserTasks,
+  createTask,
+  updateTaskById,
+  getTaskById,
+  getTasks,
 };

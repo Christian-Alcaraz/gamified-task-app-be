@@ -28,16 +28,16 @@ const TaskBody = {
 };
 
 const validation = {
-  createUserTask: {
+  createTask: {
     body: Joi.object().keys(TaskBody),
   },
-  updateUserTaskById: {
+  updateTaskById: {
     params: Joi.object().keys({
       taskId: JoiObjectId().required().description('Task ID'),
     }),
     body: Joi.object().keys(TaskBody),
   },
-  // patchUserTaskStatusById: {
+  // patchTaskStatusById: {
   //   params: Joi.object().keys({
   //     taskId: JoiObjectId().required().description('Task ID'),
   //   }),
@@ -48,16 +48,22 @@ const validation = {
   //       .description('Task status'),
   //   }),
   // },
-  getUserTaskById: {
+  getTaskById: {
     params: Joi.object().keys({
       taskId: JoiObjectId().required().description('Task ID'),
     }),
   },
-  getUserTasks: {
+  getTasks: {
     query: Joi.object().keys({
       type: Joi.string()
         .valid(...TASK_TYPES)
         .description('Task type'),
+      completed: Joi.boolean().description('Task completed'),
+      deadlineDate: Joi.when('type', {
+        is: TASK_TYPE.TODO,
+        then: Joi.string().allow('', null).description('Task deadline date'),
+        otherwise: Joi.forbidden(),
+      }),
     }),
   },
 };

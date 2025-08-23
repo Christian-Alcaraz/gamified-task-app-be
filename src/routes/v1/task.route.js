@@ -10,14 +10,14 @@ router.use(authorize());
 
 router
   .route('/')
-  .get(validate(taskValidation.getUserTasks), taskController.getUserTasks)
-  .post(validate(taskValidation.createUserTask), taskController.createUserTask);
+  .get(validate(taskValidation.getTasks), taskController.getTasks)
+  .post(validate(taskValidation.createTask), taskController.createTask);
 
-// router.patch('/:taskId/status', validate(taskValidation.patchUserTaskStatusById), taskController.patchUserTaskStatusById);
+// router.patch('/:taskId/status', validate(taskValidation.patchTaskStatusById), taskController.patchTaskStatusById);
 
 router
   .route('/:taskId')
-  .get(validate(taskValidation.getUserTaskById), taskController.getUserTaskById)
-  .put(validate(taskValidation.updateUserTaskById), taskController.updateUserTaskById);
+  .get(validate(taskValidation.getTaskById), taskController.getTaskById)
+  .put(validate(taskValidation.updateTaskById), taskController.updateTaskById);
 
 module.exports = router;

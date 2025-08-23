@@ -2,45 +2,44 @@ const httpStatus = require('http-status').status;
 const { taskService } = require('../services');
 const catchAsync = require('../utils/catchAsync');
 
-//Todo: Task Controller Methods
-const createUserTask = catchAsync(async (req, res, next) => {
+const createTask = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const taskBody = req.body;
 
-  const task = await taskService.createUserTask(taskBody, userId);
+  const task = await taskService.createTask(taskBody, userId);
 
   res.status(httpStatus.CREATED).send(task);
 });
 
-const updateUserTaskById = catchAsync(async (req, res, next) => {
+const updateTaskById = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const taskId = req.params.taskId;
   const taskBody = req.body;
 
-  const task = await taskService.updateUserTaskById(taskBody, taskId, userId);
+  const task = await taskService.updateTaskById(taskBody, taskId, userId);
 
   res.status(httpStatus.OK).send(task);
 });
 
-const getUserTaskById = catchAsync(async (req, res, next) => {
+const getTaskById = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const taskId = req.params.taskId;
 
-  const task = await taskService.getUserTaskById(taskId, userId);
+  const task = await taskService.getTaskById(taskId, userId);
   res.status(httpStatus.OK).send(task);
 });
 
-const getUserTasks = catchAsync(async (req, res, next) => {
+const getTasks = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
-  const taskType = req.query.type ?? null;
-  const tasks = await taskService.getUserTasks(userId, taskType);
+  const query = req.query;
+  const tasks = await taskService.getTasks(userId, query);
 
   res.status(httpStatus.OK).send(tasks);
 });
 
 module.exports = {
-  createUserTask,
-  updateUserTaskById,
-  getUserTaskById,
-  getUserTasks,
+  createTask,
+  updateTaskById,
+  getTaskById,
+  getTasks,
 };
