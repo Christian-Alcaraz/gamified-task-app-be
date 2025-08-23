@@ -17,6 +17,7 @@ const {
  * @property {string} [description]
  * @property {TASK_TYPE} type
  * @property {boolean} completed
+ * @property {number} streak
  * @property {TASK_DIFFICULTY} [difficulty]
  * @property {TASK_FREQUENCY} [frequency]
  * @property {Date} [deadlineDate]
@@ -43,6 +44,9 @@ const taskSchema = new mongoose.Schema(
     completed: {
       type: Boolean,
       default: false,
+    },
+    streak: {
+      type: Number,
     },
     difficulty: {
       type: String,
