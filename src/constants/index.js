@@ -3,6 +3,7 @@ const status = require('./status.constant');
 const tokenType = require('./tokenType.constant');
 const userType = require('./userType.constant');
 const taskConstants = require('./task.constant');
+const CHARACTER = require('./character.constant');
 
 module.exports = {
   ...sex,
@@ -10,4 +11,5 @@ module.exports = {
   ...tokenType,
   ...userType,
   ...taskConstants,
+  CHARACTER,
 };
