@@ -19,8 +19,7 @@ const seedSuperAdmin = async () => {
     lastName: 'Admin',
     email: config.adminCredentials.email,
     password: config.adminCredentials.password,
-    userType: USER_TYPE.ADMIN,
-    occupation: 'Super Admin',
+    type: USER_TYPE.ADMIN,
   };
 
   superAdmin._tenantId = superAdminId;

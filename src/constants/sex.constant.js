@@ -1,6 +1,6 @@
 const SEX = {
-  MALE: 'Male',
-  FEMALE: 'Female',
+  MALE: 'male',
+  FEMALE: 'female',
 };
 
 const SEXES = Object.values(SEX);
