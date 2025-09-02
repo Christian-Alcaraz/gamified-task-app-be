@@ -1,5 +1,6 @@
 const httpStatus = require('http-status').status;
 const { authService, tokenService, userService } = require('../services');
+const User = require('../models/user.model');
 const catchAsync = require('../utils/catchAsync');
 
 const registerUser = catchAsync(async (req, res) => {
@@ -21,7 +22,9 @@ const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
 });
 
 const me = catchAsync(async (req, res) => {
-  const user = await userService.getUserById(req.user._id);
+  const userId = req.user._id;
+  const user = await User.findById(userId);
+
   res.status(httpStatus.OK).send(user.toJSON());
 });
 
