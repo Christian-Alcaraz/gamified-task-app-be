@@ -4,6 +4,7 @@ const router = express.Router();
 const authRouter = require('./auth.route');
 const taskRouter = require('./task.route');
 const userRouter = require('./user.route');
+const configRouter = require('./config.route');
 
 const routes = [
   {
@@ -17,6 +18,10 @@ const routes = [
   {
     path: '/users',
     router: userRouter,
+  },
+  {
+    path: '/configs',
+    router: configRouter,
   },
 ];
 
