@@ -1,25 +1,18 @@
 //@ts-check
 const mongoose = require('mongoose');
-const {
-  TASK_TYPES,
-  TASK_TYPE,
-  TASK_STATUS,
-  TASK_STATUSES,
-  TASK_DIFFICULTY,
-  TASK_DIFFICULTIES,
-  TASK_FREQUENCY,
-  TASK_FREQUENCIES,
-} = require('../constants');
+const { TASK_TYPES, TASK_DIFFICULTIES, TASK_FREQUENCIES } = require('../constants');
+const toJSONExcludeId = require('./plugins/toJSONExcludeId');
 
 /**
  * @typedef {Object} Task
+ * @property {string} id
  * @property {string} name
  * @property {string} [description]
- * @property {TASK_TYPE} type
+ * @property {string} type
  * @property {boolean} completed
  * @property {number} streak
- * @property {TASK_DIFFICULTY} [difficulty]
- * @property {TASK_FREQUENCY} [frequency]
+ * @property {string} [difficulty]
+ * @property {string} [frequency]
  * @property {Date} [deadlineDate]
  * @property {mongoose.Types.ObjectId} _userId
  */
@@ -29,6 +22,9 @@ const {
 /** @type {mongoose.Schema<Task>} */
 const taskSchema = new mongoose.Schema(
   {
+    id: {
+      type: String, // This is for the optimistic ui frontend
+    },
     name: {
       type: String,
       required: true,
@@ -69,6 +65,8 @@ const taskSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+taskSchema.plugin(toJSONExcludeId);
 
 /** @type {mongoose.Model<Task>} */
 const Task = mongoose.model('Task', taskSchema);

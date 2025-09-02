@@ -1,11 +1,14 @@
 const Joi = require('joi');
 const { isCharacterNameTaken } = require('../services/userCharacter.service');
-const { SEXES } = require('../constants');
+const { SEXES, CHARACTER } = require('../constants');
 
 const Character = {
   name: Joi.string().required().description('Character name'),
   imageUrl: Joi.string().required().description('Character image url'),
-  class: Joi.string().required().description('Character class'),
+  class: Joi.string()
+    .valid(...CHARACTER.CLASSES)
+    .required()
+    .description('Character class'),
   gender: Joi.string()
     .valid(...SEXES)
     .required()

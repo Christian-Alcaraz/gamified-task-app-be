@@ -4,6 +4,7 @@ const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { TASK_TYPE, TASK_STATUS } = require('../constants');
 const mongoose = require('mongoose');
+const userCharacterService = require('./userCharacter.service');
 
 /** @typedef {import('../models/task.model').TaskDocument} TaskDocument */
 /** @typedef {import('../models/task.model').Task} Task */
@@ -86,6 +87,34 @@ const getTasks = async (userId, query) => {
   return await Task.find(searchQuery);
 };
 
+const putTaskCompletedStateById = async (taskId, userId, scoreState) => {
+  if (!['up', 'down'].includes(scoreState)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Bad request url connection');
+  }
+
+  const task = await getTaskById(taskId, userId);
+
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+  }
+
+  const taskBody = {};
+
+  if (task.type === TASK_TYPE.DAILIES) {
+    taskBody['streak'] = scoreState === 'up' ? task.streak + 1 : Math.max(task.streak - 1, 0);
+  }
+
+  if (scoreState === 'up') {
+    taskBody['completed'] = true;
+  } else if (scoreState === 'down') {
+    taskBody['completed'] = false;
+  }
+
+  Object.assign(task, taskBody);
+  await task.save();
+  return task;
+};
+
 // Todo: Have separate Delete Task method; this method will be used to queue the task for deletion
 
 module.exports = {
@@ -93,4 +122,5 @@ module.exports = {
   updateTaskById,
   getTaskById,
   getTasks,
+  putTaskCompletedStateById,
 };

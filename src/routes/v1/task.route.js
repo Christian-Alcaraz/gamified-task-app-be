@@ -15,6 +15,9 @@ router
 
 // router.patch('/:taskId/status', validate(taskValidation.patchTaskStatusById), taskController.patchTaskStatusById);
 
+router.route('/:taskId/score/up').put(taskController.putGrantUserTaskRewards);
+router.route('/:taskId/score/down').put(taskController.putRevokeUserTaskRewards);
+
 router
   .route('/:taskId')
   .get(validate(taskValidation.getTaskById), taskController.getTaskById)

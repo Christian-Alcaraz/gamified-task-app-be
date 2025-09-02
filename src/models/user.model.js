@@ -37,16 +37,17 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES, SEXES 
 
 /**
  * @typedef {Object} Stats
- * @property {string} health
- * @property {string} mana
- * @property {string} strength
- * @property {string} dexterity
- * @property {string} intelligence
- * @property {string} constitution
- * @property {string} experience
- * @property {string} level
- * @property {string} statPoints
- * @property {string} toNextLevel
+ * @property {number} health
+ * @property {number} mana
+ * @property {number} strength
+ * @property {number} dexterity
+ * @property {number} intelligence
+ * @property {number} constitution
+ * @property {number} experience
+ * @property {number} level
+ * @property {number} gold
+ * @property {number} statPoints
+ * @property {number} toNextLevel
  */
 
 /**
@@ -169,8 +170,11 @@ const userSchema = mongoose.Schema(
       constitution: Number,
       experience: Number,
       level: Number,
+      gold: Number,
       statPoints: Number,
       toNextLevel: Number,
+      maxHealth: Number,
+      maxMana: Number,
     },
     equipment: {
       head: String,
