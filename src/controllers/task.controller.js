@@ -74,7 +74,6 @@ module.exports = {
   updateTaskById,
   getTaskById,
   getTasks,
-  completeTaskById,
   putGrantUserTaskRewards,
   putRevokeUserTaskRewards,
 };
