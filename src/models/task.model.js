@@ -15,6 +15,8 @@ const toJSONExcludeId = require('./plugins/toJSONExcludeId');
  * @property {string} [frequency]
  * @property {Date} [deadlineDate]
  * @property {mongoose.Types.ObjectId} _userId
+ * @property {object} rewardGranted
+ * @property {array} history
  */
 
 /** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Task> & Task} TaskDocument */
@@ -22,9 +24,6 @@ const toJSONExcludeId = require('./plugins/toJSONExcludeId');
 /** @type {mongoose.Schema<Task>} */
 const taskSchema = new mongoose.Schema(
   {
-    id: {
-      type: String, // This is for the optimistic ui frontend
-    },
     name: {
       type: String,
       required: true,
@@ -60,13 +59,27 @@ const taskSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    rewardGranted: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+    history: [
+      {
+        date: {
+          type: Number,
+          required: true,
+        },
+        completed: Boolean,
+        isDue: Boolean,
+        value: Number,
+      },
+    ],
   },
   {
     timestamps: true,
   },
 );
 
-taskSchema.plugin(toJSONExcludeId);
+// taskSchema.plugin(toJSONExcludeId);
 
 /** @type {mongoose.Model<Task>} */
 const Task = mongoose.model('Task', taskSchema);

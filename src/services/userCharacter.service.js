@@ -52,6 +52,7 @@ const patchCreateUserCharacterById = async (userId, characterBody) => {
   const stats = {
     ...classStats,
     experience: defaults.experience,
+    gold: defaults.gold,
     level: defaults.level,
     statPoints: defaults.statPoints,
     toNextLevel: defaults.toNextLevel,
@@ -86,29 +87,28 @@ const updateUserCharacterById = async (userId, characterBody) => {
  * @param {TaskDocument} task
  * @returns {Promise<UserDocument>}
  */
-const putGrantUserTaskRewards = async (user, task) => {
+const putGrantUserTaskRewards = async (user, task, reward) => {
   if (!user || !task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User or Task is missing');
   }
 
   const userStats = user.stats;
-  let toNextLevel;
+  let toNextLevel = userStats.toNextLevel;
   let updateLevel = userStats.level;
   let updateExp = userStats.experience;
 
-  const reward = GAME_CORE.calculateTaskReward(userStats.level, task);
-  const remainingXp = GAME_CORE.getRemainingXPForNextLevel(userStats.level, userStats.experience + reward.experience);
+  const remainingXp = GAME_CORE.getRemainingXp(userStats.level, userStats.experience + reward.experience);
 
   if (remainingXp <= 0) {
     updateLevel++;
     updateExp = remainingXp * -1;
-    toNextLevel = GAME_CORE.getRemainingXPForNextLevel(updateLevel, updateExp);
+    toNextLevel = GAME_CORE.getRemainingXp(updateLevel, updateExp);
   } else {
-    toNextLevel = remainingXp;
     updateExp = Math.floor(updateExp + reward.experience);
   }
 
   const statsBody = {
+    ...user.stats,
     gold: userStats.gold + reward.gold,
     experience: updateExp,
     level: updateLevel,
@@ -131,43 +131,45 @@ const putRevokeUserTaskRewards = async (user, task) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User or Task is missing');
   }
 
+  if (!task.rewardGranted) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Task has not rewarded');
+  }
+
   const userStats = user.stats;
-  let toNextLevel;
+  const reward = task.rewardGranted;
+
+  let toNextLevel = userStats.toNextLevel;
   let updateLevel = userStats.level;
-  let updateExp = userStats.experience;
+  let revokedExp = userStats.experience;
 
-  const reward = GAME_CORE.calculateTaskReward(userStats.level, task);
-  const calculatedGold = userStats.gold - reward.gold <= 0 ? 0 : userStats.gold - reward.gold;
+  const revokeGold = Math.max(userStats.gold - reward.gold, 0);
 
-  updateExp -= reward.experience;
+  revokedExp -= reward.experience;
 
-  // negative updateExp
-  if (updateExp < 0) {
+  if (revokedExp < 0) {
     switch (updateLevel - 1) {
       case 0:
         updateLevel = 1;
-        updateExp = 0;
+        revokedExp = 0;
         toNextLevel = GAME_CORE.calculateXPToNextLevel(updateLevel);
         break;
       default:
         updateLevel -= 1;
         toNextLevel = GAME_CORE.calculateXPToNextLevel(updateLevel);
-        updateExp += toNextLevel;
-        toNextLevel = GAME_CORE.getRemainingXPForNextLevel(updateLevel, updateExp);
+        revokedExp += toNextLevel;
         break;
     }
-  } else {
-    toNextLevel = GAME_CORE.getRemainingXPForNextLevel(updateLevel, updateExp);
   }
 
   const statsBody = {
-    gold: calculatedGold,
-    experience: updateExp,
+    ...user.stats,
+    gold: revokeGold,
+    experience: revokedExp,
     level: updateLevel,
     toNextLevel,
   };
 
-  Object.assign(user.stats, statsBody);
+  Object.assign(user, { stats: statsBody });
   await user.save();
   return user;
 };

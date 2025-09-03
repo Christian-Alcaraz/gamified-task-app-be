@@ -10,7 +10,7 @@ const calculateXPToNextLevel = (currentLevel) => {
   return toNextLevel;
 };
 
-const getRemainingXPForNextLevel = (currentLevel, currentExperience) => {
+const getRemainingXp = (currentLevel, currentExperience) => {
   const nextLevelExperienceRequirement = calculateXPToNextLevel(currentLevel);
   const remainingExperience = nextLevelExperienceRequirement - Math.floor(currentExperience);
 
@@ -51,7 +51,7 @@ const calculateDelta = (reward, upDown) => {
 };
 
 const calculateStreakMultiplier = (currentStreak) => {
-  if (currentStreak === 0) return 1;
+  if (currentStreak <= 1) return 1;
 
   const streakLevel = calculateStreakLevel(currentStreak);
   const streakMultiplier = 1 + (GAME.INTIAL_STREAK_REWARD + GAME.STEP_STREAK_REWARD * (streakLevel - 1));
@@ -60,24 +60,26 @@ const calculateStreakMultiplier = (currentStreak) => {
 
 const calculateTaskReward = (userLevel, task) => {
   const { difficulty, type, streak } = task;
-  const taskRewardMultiplier = GAME.TASK_REWARD_MULTIPLIER[difficulty];
-  const levelMultiplier = getLevelMultiplier(userLevel);
 
-  let goldReward = GAME.BASE_REWARD_GOLD * levelMultiplier * taskRewardMultiplier;
-  let xpReward = GAME.BASE_REWARD_XP * levelMultiplier * taskRewardMultiplier;
+  let streakMultiplier = 1;
+  const taskRewardMultiplier = GAME.TASK_REWARD_MULTIPLIER[difficulty];
+  // const levelMultiplier = getLevelMultiplier(userLevel);
+
+  let goldReward = GAME.BASE_REWARD_GOLD * taskRewardMultiplier;
+  let xpReward = GAME.BASE_REWARD_XP * taskRewardMultiplier;
 
   if (type === TASK_TYPE.DAILIES) {
-    const streakMultiplier = calculateStreakMultiplier(streak);
-    goldReward *= streakMultiplier;
-    xpReward *= streakMultiplier;
+    streakMultiplier = calculateStreakMultiplier(streak);
   }
+  goldReward *= streakMultiplier;
+  xpReward *= streakMultiplier;
 
-  return { gold: goldReward, experience: Math.floor(xpReward) };
+  return { gold: goldReward, experience: xpReward };
 };
 
 module.exports = {
   calculateXPToNextLevel,
-  getRemainingXPForNextLevel,
+  getRemainingXp,
   calculateTaskReward,
   calculateDelta,
 };

@@ -20,6 +20,10 @@ const createTask = async (taskBody, userId) => {
     ...taskBody,
   };
 
+  if (body.type === TASK_TYPE.DAILIES) {
+    body['streak'] = 0;
+  }
+
   body['_userId'] = userId;
   const task = await Task.create(body);
   return task;
@@ -87,30 +91,46 @@ const getTasks = async (userId, query) => {
   return await Task.find(searchQuery);
 };
 
-const putTaskCompletedStateById = async (taskId, userId, scoreState) => {
-  if (!['up', 'down'].includes(scoreState)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Bad request url connection');
+const putTaskCompletedStateById = async (taskId, userId, scoreState, reward) => {
+  let taskUpdateBody = {};
+  const isScoreStateUp = scoreState === 'up';
+
+  if (isScoreStateUp && !reward) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Reward is required');
+  }
+
+  if (!isScoreStateUp && reward) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Reward is forbidden');
   }
 
   const task = await getTaskById(taskId, userId);
-
   if (!task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
 
-  const taskBody = {};
+  const isTaskDailies = task.type === TASK_TYPE.DAILIES;
 
-  if (task.type === TASK_TYPE.DAILIES) {
-    taskBody['streak'] = scoreState === 'up' ? task.streak + 1 : Math.max(task.streak - 1, 0);
+  if (isScoreStateUp) {
+    taskUpdateBody = {
+      completed: true,
+      rewardGranted: {
+        gold: reward.gold,
+        experience: reward.experience,
+        ...(isTaskDailies && { streak: task.streak + 1 }),
+      },
+      ...(isTaskDailies && { streak: task.streak + 1 }),
+    };
+  } else {
+    // scoreState === 'down'
+    taskUpdateBody = {
+      completed: false,
+      ...(isTaskDailies && { streak: Math.max(task.streak - 1, 0) }),
+    };
+    task['rewardGranted'] = undefined;
+    task.markModified('rewardGranted');
   }
 
-  if (scoreState === 'up') {
-    taskBody['completed'] = true;
-  } else if (scoreState === 'down') {
-    taskBody['completed'] = false;
-  }
-
-  Object.assign(task, taskBody);
+  Object.assign(task, taskUpdateBody);
   await task.save();
   return task;
 };
