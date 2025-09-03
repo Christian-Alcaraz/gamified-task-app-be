@@ -1,0 +1,52 @@
+const userService = require('./user.service');
+const httpStatus = require('http-status').status;
+const ApiError = require('../utils/ApiError');
+const { User } = require('../models');
+
+/** @typedef {import('../models/user.model').User} User */
+/** @typedef {import('../models/user.model').UserDocument} UserDocument */
+
+/**
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<UserDocument>}
+ */
+const loginUserWithEmailAndPassword = async (email, password) => {
+  const user = await userService.getUserByEmail(email);
+
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid email or password');
+  }
+  const isPasswordMatch = await user.isPasswordMatch(password);
+
+  if (!isPasswordMatch) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid email or password');
+  }
+
+  return user;
+};
+
+/**
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<UserDocument>}
+ */
+const registerUser = async (email, password) => {
+  const isUserEmailTaken = await userService.getUserByEmail(email);
+
+  if (isUserEmailTaken) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  }
+
+  const newUser = await userService.createUser({ email, password });
+  return newUser;
+};
+
+//Todo: Reset User Password via creating reset password token that will be sent to user email; meaning you need email smtp server
+
+module.exports = {
+  loginUserWithEmailAndPassword,
+  registerUser,
+};
