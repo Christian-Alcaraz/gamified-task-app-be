@@ -64,7 +64,7 @@ const putGrantUserTaskRewards = catchAsync(async (req, res, next) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User already rewarded for the task');
   }
 
-  const reward = GAME_CORE.calculateTaskReward(user.stats.level, task);
+  const reward = GAME_CORE.calculateTaskReward(task);
   const updatedUser = await userCharacterService.putGrantUserTaskRewards(user, task, reward);
   await taskService.putTaskCompletedStateById(taskId, userId, scoreState, reward);
 

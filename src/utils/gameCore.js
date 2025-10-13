@@ -17,8 +17,8 @@ const getRemainingXp = (currentLevel, currentExperience) => {
   return remainingExperience;
 };
 
-const getLevelMultiplier = (currentLevel) => {
-  return 1 + GAME.LEVEL_SCALING_FACTOR * Math.log(currentLevel);
+const getLevelMultiplier = (currentLevel, scalingFactor) => {
+  return 1 + scalingFactor * Math.log(currentLevel);
 };
 
 /**
@@ -58,12 +58,11 @@ const calculateStreakMultiplier = (currentStreak) => {
   return streakMultiplier;
 };
 
-const calculateTaskReward = (userLevel, task) => {
+const calculateTaskReward = (task) => {
   const { difficulty, type, streak } = task;
 
   let streakMultiplier = 1;
   const taskRewardMultiplier = GAME.TASK_REWARD_MULTIPLIER[difficulty];
-  // const levelMultiplier = getLevelMultiplier(userLevel);
 
   let goldReward = GAME.BASE_REWARD_GOLD * taskRewardMultiplier;
   let xpReward = GAME.BASE_REWARD_XP * taskRewardMultiplier;
