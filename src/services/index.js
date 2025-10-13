@@ -4,6 +4,7 @@ const userService = require('./user.service');
 const userCharacterService = require('./userCharacter.service');
 const taskService = require('./task.service');
 const configService = require('./config.service');
+const itemService = require('./item.service');
 
 module.exports = {
   authService,
@@ -12,4 +13,5 @@ module.exports = {
   userCharacterService,
   taskService,
   configService,
+  itemService,
 };
