@@ -6,7 +6,7 @@ const { getBearerToken } = require('../fixture/token.fixture');
 const { insertUsers, testUser } = require('../fixture/user.fixture');
 const { insertTasks, taskUserDailies, taskUserTodo } = require('../fixture/task.fixture');
 const { taskController } = require('../../src/controllers');
-const { TASK_TYPE, TASK_STATUS } = require('../../src/constants');
+const { TASK } = require('../../src/constants');
 
 setupTestDB();
 
@@ -30,7 +30,7 @@ describe('[Routes] Task = /api/tasks', () => {
       const res = await request(app).get('/api/v1/tasks?type=dailies').set('Authorization', bearerToken);
       expect(res.status).toBe(httpStatus.OK);
       expect(res.body).toEqual(
-        expect.arrayContaining([expect.objectContaining({ type: TASK_TYPE.DAILIES, _userId: testUser._id })]),
+        expect.arrayContaining([expect.objectContaining({ type: TASK.TYPE.DAILIES, _userId: testUser._id })]),
       );
     });
 
@@ -316,7 +316,7 @@ describe('[Routes] Task = /api/tasks', () => {
   //   it('should return 200 and update task status of the user', async () => {
   //     await insertTasks([taskUserDailies]);
 
-  //     const updatedStatus = TASK_STATUS.COMPLETED;
+  //     const updatedStatus = TASK.STATUS.COMPLETED;
   //     const body = {
   //       status: updatedStatus,
   //     };
@@ -335,7 +335,7 @@ describe('[Routes] Task = /api/tasks', () => {
   //   });
 
   //   it('should return 404 if task id does not exist', async () => {
-  //     const updatedStatus = TASK_STATUS.COMPLETED;
+  //     const updatedStatus = TASK.STATUS.COMPLETED;
   //     const body = {
   //       status: updatedStatus,
   //     };

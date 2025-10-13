@@ -1,27 +1,27 @@
 const Joi = require('joi');
-const { TASK_TYPES, TASK_STATUSES, TASK_DIFFICULTIES, TASK_FREQUENCIES, TASK_TYPE } = require('../constants');
+const { TASK } = require('../constants');
 const JoiObjectId = require('./helpers/mongoObjectId');
 
 const TaskBody = {
   name: Joi.string().required().description('Task name'),
   description: Joi.string().allow('', null).description('Task description'),
   type: Joi.string()
-    .valid(...TASK_TYPES)
+    .valid(...TASK.TYPES)
     .required()
     .description('Task type'),
-  status: Joi.string().valid(...TASK_STATUSES),
-  difficulty: Joi.string().valid(...TASK_DIFFICULTIES),
+  status: Joi.string().valid(...TASK.STATUSES),
+  difficulty: Joi.string().valid(...TASK.DIFFICULTIES),
   completed: Joi.boolean().optional().description('Task completed'),
   frequency: Joi.when('type', {
-    is: TASK_TYPE.DAILIES,
+    is: TASK.TYPE.DAILIES,
     then: Joi.string()
-      .valid(...TASK_FREQUENCIES)
+      .valid(...TASK.FREQUENCIES)
       .required()
       .description('Task frequency'),
     otherwise: Joi.forbidden(),
   }),
   deadlineDate: Joi.when('type', {
-    is: TASK_TYPE.TODO,
+    is: TASK.TYPE.TODO,
     then: Joi.date().allow('', null).description('Task deadline date'),
     otherwise: Joi.forbidden(),
   }),
@@ -43,7 +43,7 @@ const validation = {
   //   }),
   //   body: Joi.object().keys({
   //     status: Joi.string()
-  //       .valid(...TASK_STATUSES)
+  //       .valid(...TASK.STATUSES)
   //       .required()
   //       .description('Task status'),
   //   }),
@@ -56,11 +56,11 @@ const validation = {
   getTasks: {
     query: Joi.object().keys({
       type: Joi.string()
-        .valid(...TASK_TYPES)
+        .valid(...TASK.TYPES)
         .description('Task type'),
       completed: Joi.boolean().description('Task completed'),
       deadlineDate: Joi.when('type', {
-        is: TASK_TYPE.TODO,
+        is: TASK.TYPE.TODO,
         then: Joi.string().allow('', null).description('Task deadline date'),
         otherwise: Joi.forbidden(),
       }),

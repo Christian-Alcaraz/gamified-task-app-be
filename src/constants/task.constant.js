@@ -1,44 +1,44 @@
 // Frequency
-const TASK_FREQUENCY = {
+const FREQUENCY = {
   DAILY: 'daily',
   WEEKLY: 'weekly',
   MONTHLY: 'monthly',
   YEARLY: 'yearly',
 };
-const TASK_FREQUENCIES = Object.values(TASK_FREQUENCY);
+const FREQUENCIES = Object.values(FREQUENCY);
 
 // Difficulty
-const TASK_DIFFICULTY = {
+const DIFFICULTY = {
   TRIVIAL: 'trivial',
   EASY: 'easy',
   MEDIUM: 'medium',
   HARD: 'hard',
 };
-const TASK_DIFFICULTIES = Object.values(TASK_DIFFICULTY);
+const DIFFICULTIES = Object.values(DIFFICULTY);
 
 // Status
-const TASK_STATUS = {
+const STATUS = {
   ACTIVE: 'active',
   CANCELLED: 'cancelled',
   COMPLETED: 'completed',
   PAUSED: 'paused',
 };
-const TASK_STATUSES = Object.values(TASK_STATUS);
+const STATUSES = Object.values(STATUS);
 
 // Type
-const TASK_TYPE = {
+const TYPE = {
   DAILIES: 'dailies',
   TODO: 'todo',
 };
-const TASK_TYPES = Object.values(TASK_TYPE);
+const TYPES = Object.values(TYPE);
 
 module.exports = {
-  TASK_FREQUENCY,
-  TASK_FREQUENCIES,
-  TASK_DIFFICULTY,
-  TASK_DIFFICULTIES,
-  TASK_STATUS,
-  TASK_STATUSES,
-  TASK_TYPE,
-  TASK_TYPES,
+  FREQUENCY,
+  FREQUENCIES,
+  DIFFICULTY,
+  DIFFICULTIES,
+  STATUS,
+  STATUSES,
+  TYPE,
+  TYPES,
 };

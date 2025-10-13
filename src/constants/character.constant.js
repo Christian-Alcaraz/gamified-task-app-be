@@ -1,3 +1,5 @@
+const STAT_CONST = require('./stats.constant');
+
 const CLASS = {
   WARRIOR: 'warrior',
   ARCHER: 'archer',
@@ -8,13 +10,7 @@ const CLASS = {
 const CLASSES = Object.values(CLASS);
 
 const STAT = {
-  HEALTH: 'health',
-  MANA: 'mana',
-  STRENGTH: 'strength',
-  DEXTERITY: 'dexterity',
-  INTELLIGENCE: 'intelligence',
-  CONSTITUTION: 'constitution',
-  EXPERIENCE: 'experience',
+  ...STAT_CONST.STAT,
   LEVEL: 'level',
   STAT_POINTS: 'statPoints',
   TO_NEXT_LEVEL: 'toNextLevel',

@@ -2,7 +2,7 @@
 const { Task } = require('../models');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
-const { TASK_TYPE, TASK_STATUS } = require('../constants');
+const { TASK } = require('../constants');
 const mongoose = require('mongoose');
 const userCharacterService = require('./userCharacter.service');
 
@@ -20,7 +20,7 @@ const createTask = async (taskBody, userId) => {
     ...taskBody,
   };
 
-  if (body.type === TASK_TYPE.DAILIES) {
+  if (body.type === TASK.TYPE.DAILIES) {
     body['streak'] = 0;
   }
 
@@ -70,7 +70,7 @@ const getTaskById = async (taskId, userId) => {
 const getTasks = async (userId, query) => {
   const { type, completed, deadlineDate } = query;
 
-  if (type && type === TASK_TYPE.DAILIES && deadlineDate) {
+  if (type && type === TASK.TYPE.DAILIES && deadlineDate) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Deadline date is forbidden for Dailies tasks');
   }
 
@@ -108,7 +108,7 @@ const putTaskCompletedStateById = async (taskId, userId, scoreState, reward) => 
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
 
-  const isTaskDailies = task.type === TASK_TYPE.DAILIES;
+  const isTaskDailies = task.type === TASK.TYPE.DAILIES;
 
   if (isScoreStateUp) {
     taskUpdateBody = {

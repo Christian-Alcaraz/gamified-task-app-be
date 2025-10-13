@@ -1,6 +1,6 @@
 //@ts-check
 const mongoose = require('mongoose');
-const { TASK_TYPES, TASK_DIFFICULTIES, TASK_FREQUENCIES } = require('../constants');
+const { TASK } = require('../constants');
 const toJSONExcludeId = require('./plugins/toJSONExcludeId');
 
 /**
@@ -15,8 +15,8 @@ const toJSONExcludeId = require('./plugins/toJSONExcludeId');
  * @property {string} [frequency]
  * @property {Date} [deadlineDate]
  * @property {mongoose.Types.ObjectId} _userId
- * @property {object} rewardGranted
- * @property {array} history
+ * @property {Object} rewardGranted
+ * @property {Array<any>} history
  */
 
 /** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Task> & Task} TaskDocument */
@@ -34,7 +34,7 @@ const taskSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enums: TASK_TYPES,
+      enums: TASK.TYPES,
     },
     completed: {
       type: Boolean,
@@ -45,11 +45,11 @@ const taskSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
-      enum: TASK_DIFFICULTIES,
+      enum: TASK.DIFFICULTIES,
     },
     frequency: {
       type: String,
-      enum: TASK_FREQUENCIES,
+      enum: TASK.FREQUENCIES,
     },
     deadlineDate: {
       type: Date,
