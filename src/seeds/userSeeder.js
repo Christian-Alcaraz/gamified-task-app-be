@@ -22,8 +22,6 @@ const seedSuperAdmin = async () => {
     type: USER_TYPE.ADMIN,
   };
 
-  superAdmin._tenantId = superAdminId;
-
   await User.create(superAdmin);
 
   logger.info('[Seeder]:: Super Admin seeded.');
