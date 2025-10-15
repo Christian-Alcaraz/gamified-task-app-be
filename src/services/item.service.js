@@ -28,7 +28,7 @@ const getItemById = async (itemId) => {
 };
 
 const getItems = async (query) => {
-  const { page, limit, sort, search, name, type, tags, status } = query;
+  const { pageIndex, pageSize, sort, search, name, type, tags, status } = query;
 
   const filter = {};
 
@@ -63,8 +63,8 @@ const getItems = async (query) => {
 
   const items = await Item.find(filter)
     .sort(sort)
-    .skip(limit * (page - 1))
-    .limit(limit || 9999);
+    .skip(pageSize * pageIndex)
+    .limit(pageSize || 9999);
 
   const totalItems = await Item.countDocuments(filter);
 
