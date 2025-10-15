@@ -2,6 +2,17 @@ const Joi = require('joi');
 const { ITEM, STATUSES } = require('../constants');
 const JoiObjectId = require('./helpers/mongoObjectId');
 
+const isCostRequired = (value, helpers) => {
+  const { sources } = helpers.state.ancestors[0];
+  const isValueNull = value === null || value === undefined;
+  const isSourcesHasShop = sources && sources.includes(ITEM.SOURCE.SHOP);
+
+  if (isSourcesHasShop && isValueNull) {
+    return helpers.message('"cost" is required when "sources" includes "shop"');
+  }
+  return value;
+};
+
 const ItemBody = {
   name: Joi.string().required().description('Item name'),
   description: Joi.string().allow('', null).description('Item description'),
@@ -13,26 +24,31 @@ const ItemBody = {
     .description('Item type'),
   attributes: Joi.object()
     .keys({
-      stackable: Joi.boolean().optional().description('Item stackable'),
-      craftable: Joi.boolean().optional().description('Item craftable'),
-      enchantable: Joi.boolean().optional().description('Item enchantable'),
-      tradeable: Joi.boolean().optional().description('Item tradeable'),
-      equippable: Joi.boolean().optional().description('Item equippable'),
-      repairable: Joi.boolean().optional().description('Item repairable'),
-      sockets: Joi.boolean().optional().description('Item sockets'),
+      stackable: Joi.boolean().optional(),
+      craftable: Joi.boolean().optional(),
+      enchantable: Joi.boolean().optional(),
+      tradeable: Joi.boolean().optional(),
+      equippable: Joi.boolean().optional(),
+      repairable: Joi.boolean().optional(),
+      sockets: Joi.boolean().optional(),
     })
     .optional()
-    .allow(null),
-  // usageAttributes: Joi.object().keys({
-  //   consumeOnUse: Joi.boolean().optional().description('Item consumeOnUse'),
-  //   cooldownDuration: Joi.number().optional().description('Item cooldownDuration'),
-  //   effectDuration: Joi.number().optional().description('Item effectDuration'),
-  // }),
-  cost: Joi.number().optional().description('Item cost'),
+    .allow(null)
+    .description('Item attributes'),
+  usageAttributes: Joi.object()
+    .keys({
+      consumeOnUse: Joi.boolean().optional().description('Item consumeOnUse'),
+      cooldownDuration: Joi.number().optional().description('Item cooldownDuration'),
+      effectDuration: Joi.number().optional().description('Item effectDuration'),
+    })
+    .optional()
+    .allow(null)
+    .description('Item usageAttributes'),
   sources: Joi.array()
     .items(Joi.string().valid(...ITEM.SOURCES))
     .required()
     .description('Item sources'),
+  cost: Joi.number().custom(isCostRequired, 'Cost Requirement Validation'),
   baseStats: Joi.array()
     .items(Joi.object().pattern(Joi.string().valid(...ITEM.BASE_STATS), Joi.number().required()))
     .description('Item Base Stats'),
@@ -66,8 +82,8 @@ const validation = {
   },
   getItems: {
     query: Joi.object().keys({
-      page: Joi.number().min(1).default(1).description('Page number'),
-      limit: Joi.number().min(1).max(100).default(10).description('Items per page'),
+      pageIndex: Joi.number().min(1).default(1).description('Page number'),
+      pageSize: Joi.number().min(1).max(100).default(10).description('Items per page'),
       sort: Joi.string().pattern(new RegExp('^[a-zA-Z]+:(asc|desc)$')).description('Sort format: field:asc|desc'),
       search: Joi.string().allow('', null).description('Search term'),
       name: Joi.string().allow('', null).description('Item name'),
