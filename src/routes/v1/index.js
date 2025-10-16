@@ -5,6 +5,7 @@ const authRouter = require('./auth.route');
 const taskRouter = require('./task.route');
 const userRouter = require('./user.route');
 const configRouter = require('./config.route');
+const itemRouter = require('./item.route');
 
 const routes = [
   {
@@ -22,6 +23,10 @@ const routes = [
   {
     path: '/configs',
     router: configRouter,
+  },
+  {
+    path: '/items',
+    router: itemRouter,
   },
 ];
 

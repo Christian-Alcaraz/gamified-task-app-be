@@ -82,9 +82,12 @@ const validation = {
   },
   getItems: {
     query: Joi.object().keys({
-      pageIndex: Joi.number().min(1).default(1).description('Page number'),
+      pageIndex: Joi.number().description('Page number'),
       pageSize: Joi.number().min(1).max(100).default(10).description('Items per page'),
-      sort: Joi.string().pattern(new RegExp('^[a-zA-Z]+:(asc|desc)$')).description('Sort format: field:asc|desc'),
+      sort: Joi.alternatives()
+        .try(Joi.valid(null), Joi.string().allow('').pattern(new RegExp('^\\w+:(asc|desc)$')))
+        .optional()
+        .description('Item Sort Query'),
       search: Joi.string().allow('', null).description('Search term'),
       name: Joi.string().allow('', null).description('Item name'),
       type: Joi.string()
