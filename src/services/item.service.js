@@ -4,8 +4,28 @@ const { Item } = require('../models');
 const { ITEM } = require('../constants');
 const stringUtils = require('../utils/stringUtils');
 
+const createItemModelName = (item) => {
+  if (!item) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Item is required');
+  }
+
+  const index = ITEM.TYPE_INDEX[item.type];
+  const lowercased = item.name.toLowerCase().replace(/\s/g, '_');
+  return `${index}_${lowercased}`;
+};
+
 const createItem = async (itemBody) => {
-  const item = await Item.create(itemBody);
+  const modelName = createItemModelName(itemBody);
+
+  if (await getItemByModelName(modelName)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Item model name is already in use');
+  }
+
+  const body = {
+    ...itemBody,
+    modelName,
+  };
+  const item = await Item.create(body);
   return item;
 };
 
@@ -16,7 +36,17 @@ const updateItemById = async (itemId, itemBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Item not found');
   }
 
-  Object.assign(item, itemBody);
+  const newModelName = createItemModelName(itemBody);
+  if (await getItemByModelName(newModelName)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Item model name is already in use');
+  }
+
+  const body = {
+    ...itemBody,
+    modelName: newModelName,
+  };
+
+  Object.assign(item, body);
   await item.save();
   return item;
 };
@@ -24,6 +54,12 @@ const updateItemById = async (itemId, itemBody) => {
 const getItemById = async (itemId) => {
   return Item.findOne({
     _id: itemId,
+  });
+};
+
+const getItemByModelName = async (modelName) => {
+  return Item.findOne({
+    modelName,
   });
 };
 
