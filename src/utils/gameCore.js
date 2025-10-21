@@ -1,4 +1,4 @@
-const { TASK_TYPE } = require('../constants');
+const { TASK } = require('../constants');
 const GAME = require('../constants/game.constant');
 
 const calculateXPToNextLevel = (currentLevel) => {
@@ -67,7 +67,7 @@ const calculateTaskReward = (task) => {
   let goldReward = GAME.BASE_REWARD_GOLD * taskRewardMultiplier;
   let xpReward = GAME.BASE_REWARD_XP * taskRewardMultiplier;
 
-  if (type === TASK_TYPE.DAILIES) {
+  if (type === TASK.TYPE.DAILIES) {
     streakMultiplier = calculateStreakMultiplier(streak);
   }
   goldReward *= streakMultiplier;
