@@ -99,6 +99,8 @@ const getItems = async (query) => {
   if (sort) {
     const [path, direction] = sort.split(':');
     sortBy[path] = direction === 'desc' ? -1 : 1;
+  } else {
+    sortBy['createdAt'] = -1;
   }
 
   const items = await Item.find(filter)
