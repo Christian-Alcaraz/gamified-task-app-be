@@ -36,8 +36,11 @@ const updateItemById = async (itemId, itemBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Item not found');
   }
 
+  const isNewName = item.name !== itemBody.name;
   const newModelName = createItemModelName(itemBody);
-  if (await getItemByModelName(newModelName)) {
+  const isNewModelNameExists = await getItemByModelName(newModelName);
+
+  if (isNewName && isNewModelNameExists) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Item model name is already in use');
   }
 
@@ -47,6 +50,7 @@ const updateItemById = async (itemId, itemBody) => {
   };
 
   Object.assign(item, body);
+
   await item.save();
   return item;
 };
@@ -98,12 +102,11 @@ const getItems = async (query) => {
   }
 
   const items = await Item.find(filter)
-    .sort(sort)
+    .sort(sortBy)
     .skip(pageSize * pageIndex)
     .limit(pageSize || 9999);
 
   const totalItems = await Item.countDocuments(filter);
-
   return { records: items, total: totalItems };
 };
 
