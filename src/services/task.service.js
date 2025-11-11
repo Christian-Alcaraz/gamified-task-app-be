@@ -1,4 +1,3 @@
-// @ts-check
 const { Task } = require('../models');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');

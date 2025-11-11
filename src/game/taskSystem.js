@@ -1,26 +1,3 @@
-const { TASK } = require('../constants');
-const GAME = require('../constants/game.constant');
-
-const calculateXPToNextLevel = (currentLevel) => {
-  if (currentLevel === 1) {
-    return GAME.BASE_XP;
-  }
-
-  const toNextLevel = Math.floor(GAME.BASE_XP * currentLevel ** GAME.NEXT_LEVEL_SCALING_FACTOR);
-  return toNextLevel;
-};
-
-const getRemainingXp = (currentLevel, currentExperience) => {
-  const nextLevelExperienceRequirement = calculateXPToNextLevel(currentLevel);
-  const remainingExperience = nextLevelExperienceRequirement - Math.floor(currentExperience);
-
-  return remainingExperience;
-};
-
-const getLevelMultiplier = (currentLevel, scalingFactor) => {
-  return 1 + scalingFactor * Math.log(currentLevel);
-};
-
 /**
  * Guideline
  * Minimum Streak Days: 3 days;
@@ -40,13 +17,6 @@ const calculateStreakLevel = (currentStreak) => {
   }
 
   return streakLevel;
-};
-
-const calculateDelta = (reward, upDown) => {
-  const { gold, xp } = reward;
-  const multiplier = upDown === 'up' ? 1 : -1;
-
-  return (gold + xp) * multiplier;
 };
 
 const calculateStreakMultiplier = (currentStreak) => {
@@ -76,8 +46,5 @@ const calculateTaskReward = (task) => {
 };
 
 module.exports = {
-  calculateXPToNextLevel,
-  getRemainingXp,
   calculateTaskReward,
-  calculateDelta,
 };
