@@ -24,7 +24,13 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid email or password');
   }
 
+  //Todo: Create refresh token instance and user_session instance
+
   return user;
+};
+
+const logoutUser = async (userId) => {
+  //Todo: Remove refresh token from DB and update user_session
 };
 
 /**
@@ -48,5 +54,6 @@ const registerUser = async (email, password) => {
 
 module.exports = {
   loginUserWithEmailAndPassword,
+  logoutUser,
   registerUser,
 };

@@ -11,5 +11,6 @@ router.post('/login', validate(authValidation.login), authController.loginUserWi
 
 router.use(authorize());
 router.get('/me', authController.me);
+router.post('/logout', authController.logoutUser);
 
 module.exports = router;
