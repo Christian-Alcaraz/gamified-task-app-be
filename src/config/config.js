@@ -13,7 +13,11 @@ const envVarsSchema = Joi.object()
     MONGODB_URL: Joi.string().required(),
 
     JWT_SECRET: Joi.string().required(),
-    JWT_EXPIRATION_TIME_DAY: Joi.string().required(),
+    JWT_REFRESH_SECRET: Joi.string().required(),
+    JWT_RESET_PASSWORD_SECRET: Joi.string().required(),
+
+    JWT_AUTH_TOKEN_EXPIRATION_TIME_MINUTES: Joi.string().required(),
+    JWT_REFRESH_TOKEN_EXPIRATION_TIME_DAYS: Joi.string().required(),
     JWT_RESET_PASSWORD_EXPIRATION_TIME_MINUTES: Joi.string().required(),
 
     ADMIN_ID: Joi.string().required(),
@@ -37,7 +41,10 @@ module.exports = {
 
   jwt: {
     secret: envVars.JWT_SECRET,
-    authTokenExpirationDays: envVars.JWT_EXPIRATION_TIME_DAY,
+    refreshSecret: envVars.JWT_REFRESH_SECRET,
+    resetPasswordSecret: envVars.JWT_RESET_PASSWORD_SECRET,
+    authTokenExpirationMins: envVars.JWT_AUTH_TOKEN_EXPIRATION_TIME_MINUTES,
+    refreshTokenExpirationDays: envVars.JWT_REFRESH_TOKEN_EXPIRATION_TIME_DAYS,
     resetPasswordExpirationMins: envVars.JWT_RESET_PASSWORD_EXPIRATION_TIME_MINUTES,
   },
   adminCredentials: {
