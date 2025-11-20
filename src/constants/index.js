@@ -9,6 +9,8 @@ const GAME = require('./game.constant');
 const TASK = require('./task.constant');
 const CHARACTER = require('./character.constant');
 const ITEM = require('./item.constant');
+const ENVIRONMENT = require('./environment.constant');
+
 module.exports = {
   ...sex,
   ...status,
@@ -20,4 +22,5 @@ module.exports = {
   GAME,
   CHARACTER,
   ITEM,
+  ENVIRONMENT,
 };
