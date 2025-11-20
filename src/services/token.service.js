@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const httpStatus = require('http-status').status;
-const { User, RefreshToken } = require('../models');
+const { User } = require('../models');
 const { STATUS, TOKEN_TYPE } = require('../constants');
 const config = require('../config/config');
 const crypto = require('crypto');
@@ -16,34 +16,6 @@ const verifyResetPasswordToken = async (token) => {
   let payload;
   try {
     payload = verifyToken(token, config.jwt.resetPasswordSecret);
-    if (payload.type !== TOKEN_TYPE.CHANGE_PASSWORD) {
-      throw new Error('Incorrect token was used');
-    }
-  } catch (e) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Reset password link expired, please try again.');
-  }
-  const userId = payload.sub;
-  const user = await User.findById(userId);
-
-  if (!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Reset Password failed, please try again.');
-  }
-
-  if (user.status === STATUS.DELETED) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account has been deleted, please contact support');
-  }
-
-  if (user.status === STATUS.INACTIVE) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is inactive, please contact support');
-  }
-
-  return user;
-};
-
-const verifyRefreshToken = async (token) => {
-  let payload;
-  try {
-    payload = verifyToken(token, config.jwt.refreshSecret);
     if (payload.type !== TOKEN_TYPE.CHANGE_PASSWORD) {
       throw new Error('Incorrect token was used');
     }
@@ -87,23 +59,9 @@ const generateAuthToken = (userId) => {
   return token;
 };
 
-const generateRefreshToken = (userId) => {
-  const refreshTokenExpires = moment().add(config.jwt.refreshTokenExpirationDays, 'days');
-  const token = generateToken(userId, refreshTokenExpires, TOKEN_TYPE.REFRESH);
-
-  return token;
-};
-
 const generateResetPasswordToken = (userId) => {
   const expires = moment().add(config.jwt.resetPasswordExpirationMins, 'minutes');
   return generateToken(userId, expires, TOKEN_TYPE.CHANGE_PASSWORD);
-};
-
-const getRefreshTokenByUserId = async (userId) => {
-  const filter = { _userId: userId, revokedAt: { $exists: false } };
-  const refreshToken = await RefreshToken.find(filter);
-
-  return refreshToken;
 };
 
 module.exports = {
@@ -111,5 +69,4 @@ module.exports = {
   verifyResetPasswordToken,
   generateAuthToken,
   generateResetPasswordToken,
-  getRefreshTokenByUserId,
 };

@@ -1,4 +1,5 @@
 const userService = require('./user.service');
+const refreshTokenService = require('./refreshToken.service');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { User } = require('../models');
@@ -24,12 +25,17 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid email or password');
   }
 
-  //Todo: Create refresh token instance and user_session instance
-
   return user;
 };
 
 const logoutUser = async (userId) => {
+  let latestRefreshToken;
+  if (userId) {
+    latestRefreshToken = await refreshTokenService.getLatestRefreshTokenByUserId(userId);
+    if (latestRefreshToken) {
+      await refreshTokenService.revokeRefreshTokenById(latestRefreshToken._id);
+    }
+  }
   //Todo: Remove refresh token from DB and update user_session
 };
 
