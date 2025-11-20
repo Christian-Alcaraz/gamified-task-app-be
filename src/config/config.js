@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 const envVarsSchema = Joi.object()
   .keys({
     APP_NAME: Joi.string().required(),
+    APP_ENCRYPTION_KEY: Joi.string().required(),
 
     NODE_ENV: Joi.string().valid('production', 'staging', 'dev', 'test'),
     PORT: Joi.number().default(3000),
@@ -34,6 +35,7 @@ if (error) {
 
 module.exports = {
   appName: envVars.APP_NAME,
+  appEncryptionKey: envVars.APP_ENCRYPTION_KEY,
 
   env: envVars.NODE_ENV,
   port: envVars.PORT,
