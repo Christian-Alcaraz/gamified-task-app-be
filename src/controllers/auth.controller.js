@@ -43,16 +43,20 @@ const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ ...user.toJSON(), token });
 });
 
-const refreshUserAuthToken = catchAsync(async (req, res) => {
+const refreshUserAuthToken = catchAsync(async (req, res, next) => {
+  const handleUnauthorized = () => {
+    res.cookie(TOKEN.REFRESH_COOKIE, '', cookieUtils.getCookieOptionsToExpire());
+    return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate again'));
+  };
+
   const refreshTokenFromCookie = req.cookies[TOKEN.REFRESH_COOKIE];
   if (!refreshTokenFromCookie) {
-    return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate again'));
+    return handleUnauthorized();
   }
 
   const refreshTokenFromDb = await refreshTokenService.getRefreshToken(refreshTokenFromCookie);
   if (!refreshTokenFromDb || refreshTokenFromDb?.revokedAt || dateUtils.isExpired(refreshTokenFromDb.expiresAt)) {
-    res.cookie(TOKEN.REFRESH_COOKIE, '', { httpOnly: true, sameSite: 'none', secure: true, maxAge: 0 });
-    res.status(httpStatus.UNAUTHORIZED).send('Please authenticate again');
+    return handleUnauthorized();
   }
 
   await refreshTokenService.revokeRefreshTokenById(refreshTokenFromDb._id);
@@ -71,14 +75,14 @@ const me = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(user.toJSON());
 });
 
-// Todo: Nice
+// Todo: Session?
 const logoutUser = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const refreshTokenCookie = req.cookies;
 
   // await authService.logoutUser(userId);
 
-  res.cookie(TOKEN.REFRESH_COOKIE, '', { httpOnly: true, sameSite: 'lax', secure: true, maxAge: 0 });
+  res.cookie(TOKEN.REFRESH_COOKIE, '', cookieUtils.getCookieOptionsToExpire());
   res.status(httpStatus.OK).send();
 });
 
