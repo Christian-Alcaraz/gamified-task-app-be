@@ -4,6 +4,7 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const config = require('../../config/config');
 const morgan = require('../../config/morgan');
@@ -23,7 +24,7 @@ class Middleware {
 
     app.use(express.json({ limit: '10kb' }));
     app.use(express.urlencoded({ extended: true }));
-    //app.use(cookieParser());
+    app.use(cookieParser());
     //app.set('trust proxy', 1); What is trust proxy?
 
     // const whitelistedOrigins = [''];
