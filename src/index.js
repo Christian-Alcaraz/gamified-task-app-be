@@ -1,40 +1,42 @@
-const mongoose = require('mongoose');
-const config = require('./config/config');
-const app = require('./app');
 const logger = require('./config/logger');
-const seed = require('./seeds');
+const Mongo = require('./connections/mongo');
+const ExpressApp = require('./connections/app');
+const State = require('./utils/state');
 
-let server;
-mongoose.connect(config.mongodbUrl).then(async () => {
-  logger.info('Connected to MongoDB');
-  await seed();
-  server = app.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
-  });
-});
-
-const exitHandler = () => {
-  if (server) {
-    server.close(() => {
-      logger.info('Server closed');
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
+const close = () => {
+  State.kill();
+  process.exit(0);
 };
 
 const unexpectedErrorHandler = (error) => {
   logger.error(error);
-  exitHandler();
+  close();
 };
 
-process.on('uncaughtException', unexpectedErrorHandler);
-process.on('unhandledRejection', unexpectedErrorHandler);
+const listenForSignals = () => {
+  process.on('uncaughtException', unexpectedErrorHandler);
+  process.on('unhandledRejection', unexpectedErrorHandler);
+  process.on('SIGTERM', () => {
+    Log.log('Server', 'Received signal SIGTERM. Gracefully closing');
+    close();
+  });
+  process.on('SIGINT', () => {
+    Log.log('Server', 'Received signal SIGINT. Gracefully closing');
+    close();
+  });
+};
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received');
-  if (server) {
-    server.close();
-  }
-});
+const main = async () => {
+  logger.info('[Server]:: Starting application...');
+  const mongo = await Mongo.create();
+  const app = new ExpressApp();
+
+  State.mongo = mongo;
+  State.app = app;
+
+  app.init();
+
+  listenForSignals();
+};
+
+main();
