@@ -17,11 +17,11 @@ const listenForSignals = () => {
   process.on('uncaughtException', unexpectedErrorHandler);
   process.on('unhandledRejection', unexpectedErrorHandler);
   process.on('SIGTERM', () => {
-    Log.log('Server', 'Received signal SIGTERM. Gracefully closing');
+    logger.warn('Server', 'Received signal SIGTERM. Gracefully closing');
     close();
   });
   process.on('SIGINT', () => {
-    Log.log('Server', 'Received signal SIGINT. Gracefully closing');
+    logger.warn('Server', 'Received signal SIGINT. Gracefully closing');
     close();
   });
 };
