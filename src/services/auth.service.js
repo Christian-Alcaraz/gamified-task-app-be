@@ -1,4 +1,5 @@
 const userService = require('./user.service');
+const refreshTokenService = require('./refreshToken.service');
 const httpStatus = require('http-status').status;
 const ApiError = require('../utils/ApiError');
 const { User } = require('../models');
@@ -27,6 +28,17 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
+const logoutUser = async (userId) => {
+  let latestRefreshToken;
+  if (userId) {
+    latestRefreshToken = await refreshTokenService.getLatestRefreshTokenByUserId(userId);
+    if (latestRefreshToken) {
+      await refreshTokenService.revokeRefreshTokenById(latestRefreshToken._id);
+    }
+  }
+  //Todo: Remove refresh token from DB and update user_session
+};
+
 /**
  *
  * @param {string} email
@@ -48,5 +60,6 @@ const registerUser = async (email, password) => {
 
 module.exports = {
   loginUserWithEmailAndPassword,
+  logoutUser,
   registerUser,
 };

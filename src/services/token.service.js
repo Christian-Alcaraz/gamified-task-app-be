@@ -4,7 +4,9 @@ const httpStatus = require('http-status').status;
 const { User } = require('../models');
 const { STATUS, TOKEN_TYPE } = require('../constants');
 const config = require('../config/config');
+const crypto = require('crypto');
 const ApiError = require('../utils/ApiError');
+const stringUtils = require('../utils/stringUtils');
 
 const verifyToken = (token, secret = config.jwt.secret) => {
   return jwt.verify(token, secret);
@@ -15,13 +17,13 @@ const verifyResetPasswordToken = async (token) => {
   try {
     payload = verifyToken(token, config.jwt.resetPasswordSecret);
     if (payload.type !== TOKEN_TYPE.CHANGE_PASSWORD) {
-      throw new Error();
+      throw new Error('Incorrect token was used');
     }
   } catch (e) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Reset password link expired, please try again.');
   }
-
-  const user = await User.findById(payload.sub);
+  const userId = payload.sub;
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Reset Password failed, please try again.');
@@ -38,19 +40,20 @@ const verifyResetPasswordToken = async (token) => {
   return user;
 };
 
-const generateToken = (userId, expires, tokenType) => {
+const generateToken = (userId, expires, tokenType, args) => {
   const payload = {
     sub: userId,
     iat: moment().unix(),
     exp: expires.unix(),
     type: tokenType,
+    ...(args ?? {}),
   };
 
   return jwt.sign(payload, config.jwt.secret);
 };
 
 const generateAuthToken = (userId) => {
-  const accessTokenExpires = moment().add(config.jwt.authTokenExpirationDays, 'days');
+  const accessTokenExpires = moment().add(config.jwt.authTokenExpirationMins, 'minutes');
   const token = generateToken(userId, accessTokenExpires, TOKEN_TYPE.ACCESS);
 
   return token;

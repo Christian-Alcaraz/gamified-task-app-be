@@ -6,6 +6,7 @@ const { taskValidation } = require('../../validations');
 
 const router = express.Router();
 
+// router.use(verifyAuthToken());
 router.use(authorize());
 
 router

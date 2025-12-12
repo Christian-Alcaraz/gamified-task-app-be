@@ -5,6 +5,7 @@ const userCharacterService = require('./userCharacter.service');
 const taskService = require('./task.service');
 const configService = require('./config.service');
 const itemService = require('./item.service');
+const refreshTokenService = require('./refreshToken.service');
 
 module.exports = {
   authService,
@@ -14,4 +15,5 @@ module.exports = {
   taskService,
   configService,
   itemService,
+  refreshTokenService,
 };

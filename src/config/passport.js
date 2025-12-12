@@ -16,7 +16,6 @@ const jwtVerify = async (payload, done) => {
 
     const user = await User.findOne({
       _id: payload.sub,
-      status: STATUS.ACTIVE,
     });
     if (!user) {
       return done(null, false);

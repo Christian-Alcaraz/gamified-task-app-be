@@ -7,8 +7,14 @@ const authorize =
   (...userTypes) =>
   async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, async (err, user, info) => {
-      if (err || info || !user) {
-        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
+      if (info?.name === 'TokenExpiredError') {
+        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Token Expired'));
+      } else if (info) {
+        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized Request'));
+      }
+
+      if (err || !user) {
+        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized Request'));
       }
 
       req.user = user;

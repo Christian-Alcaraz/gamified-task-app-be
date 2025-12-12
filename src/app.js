@@ -5,7 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status').status;
 const config = require('./config/config');
 const morgan = require('./config/morgan');
 const { jwtStrategy } = require('./config/passport');
@@ -13,6 +13,7 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -33,28 +34,39 @@ app.use(xss());
 app.use(mongoSanitize());
 
 app.use(compression());
+app.use(cookieParser());
 
 // for production whitelisting
 // const whitelistedOrigins = [''];
+// if (config.env !== 'production') {
+//   return callback(null, { origin: 'true', credentials: true });
+// }
+
+// if (!whitelistedOrigins.includes(origin)) {
+//   return callback(new ApiError(httpStatus.NOT_FOUND, 'Not Found'), { origin: false });
+// }
 app.use(
   cors((req, callback) => {
     const origin = req.headers.origin;
 
-    if (config.env !== 'production') {
-      return callback(null, { origin: true });
-    }
-
-    // if (!whitelistedOrigins.includes(origin)) {
-    //   return callback(new ApiError(httpStatus.NOT_FOUND, 'Not Found'), { origin: false });
-    // }
-
-    return callback(null, { origin: true });
+    // ? Dev Config Cors
+    return callback(null, { origin: true, credentials: true });
   }),
 );
 app.options('*', cors());
 
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
+
+//* Setup Headers for HTTP Only Cookies
+// app.use(function (req, res, next) {
+//   const origin = req.headers.origin;
+
+//   res.setHeader('Access-Control-Allow-Credentials', 'true');
+//   res.appendHeader('Access-Control-Allow-Origin', origin);
+//   res.appendHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   next();
+// });
 
 if (['production', 'staging'].includes(config.env)) {
   app.use('/v1/auth', authLimiter);
@@ -63,6 +75,7 @@ if (['production', 'staging'].includes(config.env)) {
   app.use('/api/v1', routes);
 }
 
+//* If no route is matched, send 404 response
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Request not found'));
 });
