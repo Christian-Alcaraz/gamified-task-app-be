@@ -52,7 +52,7 @@ const updateUserById = async (userId, userBody) => {
 const getUserById = async (userId) => {
   return User.findOne({
     _id: userId,
-    type: USER_TYPE.USER,
+    // type: USER_TYPE.USER,
   });
 };
 

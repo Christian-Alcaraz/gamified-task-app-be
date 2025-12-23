@@ -1,9 +1,9 @@
+const catchAsync = require('../utils/catchAsync');
+const User = require('../models/user.model');
+const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status').status;
 const { TOKEN } = require('../constants');
-const User = require('../models/user.model');
 const { authService, tokenService, refreshTokenService } = require('../services');
-const catchAsync = require('../utils/catchAsync');
-const ApiError = require('../utils/ApiError');
 const cookieUtils = require('../utils/cookieUtils');
 const dateUtils = require('../utils/dateUtils');
 

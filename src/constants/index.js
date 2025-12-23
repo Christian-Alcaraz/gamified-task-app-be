@@ -4,6 +4,7 @@ const tokenType = require('./tokenType.constant');
 const userType = require('./userType.constant');
 const config = require('./config.constant');
 const stat = require('./stats.constant');
+const socket = require('./socket.constant');
 
 const GAME = require('./game.constant');
 const TASK = require('./task.constant');
@@ -18,6 +19,7 @@ module.exports = {
   ...tokenType,
   ...userType,
   ...config,
+  ...socket,
   TASK,
   GAME,
   CHARACTER,

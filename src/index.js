@@ -2,6 +2,7 @@ const logger = require('./config/logger');
 const Mongo = require('./connections/mongo');
 const ExpressApp = require('./connections/app');
 const State = require('./utils/state');
+const WebsocketServer = require('./connections/websocket');
 
 const close = () => {
   State.kill();
@@ -30,12 +31,14 @@ const main = async () => {
   logger.info('[Server]:: Starting application...');
   const mongo = await Mongo.create();
   const app = new ExpressApp();
+  const socket = new WebsocketServer();
 
   State.mongo = mongo;
   State.app = app;
+  State.socket = socket;
 
   app.init();
-
+  socket.init(app.server);
   listenForSignals();
 };
 

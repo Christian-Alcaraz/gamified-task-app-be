@@ -7,31 +7,31 @@ const State = require('../../utils/state');
 class Mongo {
   async init() {
     return new Promise((resolve, reject) => {
-      logger.info('Connecting to MongoDB');
+      logger.info('[MongoDB]:: Connecting to MongoDB');
 
       mongoose
         .connect(config.mongodbUrl)
         .then(() => {
-          logger.info('MongoDB Instance connected');
+          logger.info('[MongoDB]:: MongoDB Instance connected');
         })
         .catch((err) => {
-          logger.error('MongoDB Instance connection failed', err);
+          logger.error('[MongoDB]:: MongoDB Instance connection failed', err);
           reject(err);
         });
 
       mongoose.connection.on('connected', async () => {
-        logger.info('Connected to MongoDB');
+        logger.info('[MongoDB]:: Connected to MongoDB');
         await seed();
         resolve();
       });
       mongoose.connection.on('reconnected', () => {
-        logger.warn('MongoDB reconnected');
+        logger.warn('[MongoDB]:: MongoDB reconnected');
       });
       mongoose.connection.on('disconnected', () => {
-        logger.error('MongoDB disconnected');
+        logger.error('[MongoDB]:: MongoDB disconnected');
       });
       mongoose.connection.on('error', (err) => {
-        logger.error('MongoDB connection error', err);
+        logger.error('[MongoDB]:: MongoDB connection error', err);
         State.kill();
       });
     });
@@ -39,7 +39,7 @@ class Mongo {
 
   disconnect() {
     mongoose.disconnect().catch((err) => {
-      logger.error('MongoDB cannot disconnect', err);
+      logger.error('[MongoDB]:: MongoDB cannot disconnect', err);
     });
   }
 }

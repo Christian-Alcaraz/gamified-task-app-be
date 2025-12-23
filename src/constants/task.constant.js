@@ -23,6 +23,7 @@ const STATUS = {
   COMPLETED: 'completed',
   PAUSED: 'paused',
 };
+
 const STATUSES = Object.values(STATUS);
 
 // Type

@@ -6,14 +6,17 @@ const routes = require('../../routes/v1');
 const httpStatus = require('http-status').status;
 const ApiError = require('../../utils/ApiError');
 const logger = require('../../config/logger');
+const http = require('http');
 class App {
-  app;
-  middleware;
-  server;
+  app = null;
+  middleware = null;
+  server = null;
+  env = 'development';
 
   constructor() {
     this.app = express();
     this.middleware = new Middleware();
+    this.env = config.env;
   }
 
   init() {
@@ -34,9 +37,13 @@ class App {
   }
 
   initServer() {
-    this.server = require('http').createServer(this.app);
+    this.server = http.createServer(this.app);
     this.server.listen(config.port, () => {
-      console.log(`Listening to port ${config.port}`);
+      if (this.env !== 'production') {
+        logger.info(`[Server]:: Server started on port ${config.port}`);
+      } else {
+        console.log(`[Server]:: Server started on port ${config.port}`);
+      }
     });
   }
 

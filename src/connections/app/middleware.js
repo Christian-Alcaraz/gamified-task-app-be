@@ -29,16 +29,16 @@ class Middleware {
 
     // const whitelistedOrigins = [''];
     app.use(
-      cors((_req, callback) => {
+      cors((req, callback) => {
         const origin = req.headers.origin;
         if (config.env !== 'production') {
-          return callback(null, { origin: true });
+          return callback(null, { origin: true, credentials: true });
         }
         // if (!whitelistedOrigins.includes(origin)) {
         //   return callback(new ApiError(httpStatus.NOT_FOUND, 'Not Found'), { origin: false });
         // }
 
-        return callback(null, { origin: true });
+        return callback(null, { origin: true, credentials: true });
       }),
     );
     app.options('*', cors());
@@ -77,7 +77,10 @@ class Middleware {
       next();
     });
   }
-
+  /**
+   * Initialize error handler for the Express app
+   * @param {Express} app
+   */
   generateErrorHandler(app) {
     app.use(errorConverter);
     app.use(errorHandler);
