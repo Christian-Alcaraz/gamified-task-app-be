@@ -1,8 +1,9 @@
 const crypto = require('crypto');
 
+const DEFAULT_CHARSET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+=-';
 const generatePassword = () => {
   const length = 8;
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+=-';
+  const charset = DEFAULT_CHARSET;
   let password = '';
   while (!/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[^a-zA-Z0-9]/.test(password)) {
     password = Array.from(crypto.randomFillSync(new Uint8Array(length)))
@@ -11,6 +12,16 @@ const generatePassword = () => {
   }
 
   return password;
+};
+
+const generateStringFromCharset = (length = 8, charset = DEFAULT_CHARSET) => {
+  let password = '';
+  while (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    password = Array.from(crypto.randomFillSync(new Uint8Array(length)))
+      .map((x) => charset[x % charset.length])
+      .join('');
+  }
+  return password.slice(0, length);
 };
 
 const generateUniqueString = () => {
@@ -31,6 +42,7 @@ const escapeRegExp = (string) => {
 
 module.exports = {
   generatePassword,
+  generateStringFromCharset,
   generateUniqueString,
   isIdEqual,
   isIdNotEqual,

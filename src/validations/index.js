@@ -3,6 +3,7 @@ const userValidation = require('./user.validation');
 const userCharacterValidation = require('./userCharacter.validation');
 const taskValidation = require('./task.validation');
 const itemValidation = require('./item.validation');
+const partyValidation = require('./party.validation');
 
 module.exports = {
   authValidation,
@@ -10,4 +11,5 @@ module.exports = {
   userCharacterValidation,
   taskValidation,
   itemValidation,
+  partyValidation,
 };

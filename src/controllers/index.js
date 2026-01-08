@@ -4,6 +4,7 @@ const userCharacterController = require('./userCharacter.controller');
 const taskController = require('./task.controller');
 const configController = require('./config.controller');
 const itemController = require('./item.controller');
+const partyController = require('./party.controller');
 
 module.exports = {
   authController,
@@ -12,4 +13,5 @@ module.exports = {
   userCharacterController,
   configController,
   itemController,
+  partyController,
 };

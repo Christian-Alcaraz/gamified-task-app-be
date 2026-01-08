@@ -6,6 +6,7 @@ const taskRouter = require('./task.route');
 const userRouter = require('./user.route');
 const configRouter = require('./config.route');
 const itemRouter = require('./item.route');
+const partyRouter = require('./party.route');
 
 const routes = [
   {
@@ -27,6 +28,10 @@ const routes = [
   {
     path: '/items',
     router: itemRouter,
+  },
+  {
+    path: '/parties',
+    router: partyRouter,
   },
 ];
 

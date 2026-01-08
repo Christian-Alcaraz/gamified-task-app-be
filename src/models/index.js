@@ -3,6 +3,7 @@ const Task = require('./task.model');
 const Config = require('./config.model');
 const Item = require('./item.model');
 const RefreshToken = require('./refreshToken.model');
+const Party = require('./party.model');
 
 module.exports = {
   User,
@@ -10,4 +11,5 @@ module.exports = {
   Config,
   Item,
   RefreshToken,
+  Party,
 };

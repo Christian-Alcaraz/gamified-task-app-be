@@ -197,6 +197,17 @@ const userSchema = mongoose.Schema(
         default: false,
       },
     },
+    _partyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Party',
+    },
+    updatedBy: {
+      name: String,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    },
   },
   {
     timestamps: true,
