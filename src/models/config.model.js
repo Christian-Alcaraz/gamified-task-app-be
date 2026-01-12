@@ -2,14 +2,15 @@ const mongoose = require('mongoose');
 
 /**
  * @typedef {Object} Config
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} name
  * @property {Object} data
  */
 
-/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Config> & Config} ConfigDocument */
+/** @typedef {mongoose.Document & Config} ConfigDocument */
 
 /** @type {mongoose.Schema<Config>} */
-const configSchema = mongoose.Schema(
+const configSchema = new mongoose.Schema(
   {
     name: {
       type: String,

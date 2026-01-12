@@ -1,20 +1,31 @@
 const mongoose = require('mongoose');
 const { STATUSES, STATUS } = require('../constants');
+
+/** @typedef {import('../types').IUserLog} IUserLog */
+
 /**
- * @typedef {Object} Party
- * @property {string} name
- * @property {string} code
- * @property {string} description
- * @property {string} imageUrl
- * @property {User} leader
- * @property {Array<User>} members
- * @property {boolean} public
- * @property {string} status
+ * @typedef {IUserLog & {role?: string}} PartyMember
  */
 
-/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Party> & Party} PartyDocument */
+/**
+ * @typedef {Object} Party
+ * @property {mongoose.Types.ObjectId} [_id]
+ * @property {string} name
+ * @property {string} [code]
+ * @property {string} description
+ * @property {string} [imageUrl]
+ * @property {PartyMember} leader
+ * @property {Array<PartyMember>} members
+ * @property {boolean} isPublic
+ * @property {string} status
+ * @property {IUserLog} [updatedBy]
+ * @property {IUserLog} [createdBy]
+ */
 
-const partySchema = mongoose.Schema(
+/** @typedef {mongoose.Document & Party} PartyDocument */
+
+/** @type {mongoose.Schema<PartyDocument>} */
+const partySchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -45,7 +56,10 @@ const partySchema = mongoose.Schema(
         type: String,
         required: true,
       },
-      id: {
+      role: {
+        type: String,
+      },
+      userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -57,14 +71,17 @@ const partySchema = mongoose.Schema(
           type: String,
           required: true,
         },
-        id: {
+        role: {
+          type: String,
+        },
+        userId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
           required: true,
         },
       },
     ],
-    public: {
+    isPublic: {
       type: Boolean,
     },
     status: {
@@ -79,12 +96,20 @@ const partySchema = mongoose.Schema(
         ref: 'User',
       },
     },
+    createdBy: {
+      name: String,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    },
   },
   {
     timestamps: true,
   },
 );
 
+/** @type {mongoose.Model<PartyDocument>} */
 const Party = mongoose.model('Party', partySchema);
 
 module.exports = Party;

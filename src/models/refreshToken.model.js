@@ -1,21 +1,20 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const toJSON = require('./plugins/toJSON');
-const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES, SEXES } = require('../constants');
-const { ref } = require('joi');
 
 /**
  * @typedef {Object} RefreshToken
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {Object} token
  * @property {Date} expiresAt
  * @property {mongoose.Types.ObjectId} _userId
+ * @property {Date} [revokedAt]
+ * @property {Date} [createdAt]
+ * @property {Date} [updatedAt]
  */
 
-/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, RefreshToken> & RefreshToken} RefreshTokenDocument */
+/** @typedef {mongoose.Document & RefreshToken} RefreshTokenDocument */
 
 /** @type {mongoose.Schema<RefreshToken>} */
-const refreshTokenSchema = mongoose.Schema(
+const refreshTokenSchema = new mongoose.Schema(
   {
     token: {
       type: String,

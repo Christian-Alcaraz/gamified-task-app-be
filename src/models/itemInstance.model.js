@@ -4,6 +4,7 @@ const { ITEM } = require('../constants');
 
 /**
  * @typedef {Object} ItemInstance
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} name
  * @property {string} description
  * @property {string} texture
@@ -76,7 +77,7 @@ const itemInstanceSchema = new mongoose.Schema(
       ref: 'Item',
       required: true,
     },
-    _user: {
+    user: {
       name: {
         type: String,
         required: true,
@@ -89,7 +90,10 @@ const itemInstanceSchema = new mongoose.Schema(
     },
     updatedBy: {
       name: String,
-      userId: mongoose.Schema.Types.ObjectId,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     },
   },
   {

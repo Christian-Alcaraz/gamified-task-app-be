@@ -14,6 +14,7 @@ const { User } = require('../models');
  * @returns {Promise<UserDocument>}
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
+  /** @type {UserDocument} */
   const user = await userService.getUserByEmail(email);
 
   if (!user) {
@@ -28,6 +29,10 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
+/**
+ * Logout a user
+ * @param {string} userId
+ */
 const logoutUser = async (userId) => {
   let latestRefreshToken;
   if (userId) {
@@ -40,7 +45,7 @@ const logoutUser = async (userId) => {
 };
 
 /**
- *
+ *  Register a new user
  * @param {string} email
  * @param {string} password
  * @returns {Promise<UserDocument>}
@@ -51,7 +56,6 @@ const registerUser = async (email, password) => {
   if (isUserEmailTaken) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-
   const newUser = await userService.createUser({ email, password });
   return newUser;
 };

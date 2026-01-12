@@ -4,8 +4,22 @@ const stringUtils = require('../utils/stringUtils');
 const { PARTY_CODE_CHARSET, PARTY_CODE_LENGTH } = require('../constants');
 const { Party } = require('../models');
 
+/** @typedef {import('../models/party.model').Party} Party */
+/** @typedef {import('../models/party.model').PartyDocument} PartyDocument */
+
+/**
+ * Create Party
+ * @param {Partial<Party>} partyBody
+ * @returns {Promise<PartyDocument>}
+ */
 const createParty = async (partyBody) => {
-  const code = stringUtils.generateStringFromCharset(PARTY_CODE_LENGTH, PARTY_CODE_CHARSET);
+  let code;
+
+  do {
+    code = stringUtils.generateStringFromCharset(PARTY_CODE_LENGTH, PARTY_CODE_CHARSET);
+  } while (await getPartyByCode(code));
+
+  /** @type {Partial<Party>} */
   const body = {
     ...partyBody,
     code,
@@ -15,16 +29,31 @@ const createParty = async (partyBody) => {
   return party;
 };
 
+/**
+ *  Find and get party by id
+ * @param {string} partyId
+ * @returns {Promise<PartyDocument>}
+ */
 const getPartyById = async (partyId) => {
   return Party.findById(partyId);
 };
 
+/**
+ * Find and get party by code
+ * @param {string} code
+ * @returns
+ */
 const getPartyByCode = async (code) => {
   return Party.findOne({ code });
 };
 
+/**
+ * Get Parties via req.query
+ * @param {any} query
+ * @returns
+ */
 const getParties = async (query) => {
-  const { pageIndex, pageSize, sort, search, name, code, public, status } = query;
+  const { pageIndex, pageSize, sort, search, name, code, isPublic, status } = query;
 
   const filter = {};
 
@@ -33,16 +62,16 @@ const getParties = async (query) => {
     filter.$or = [{ name: { $regex: searchRegex } }, { code: { $regex: searchRegex } }];
   } else {
     if (name) {
-      filter.name = { $regex: new RegExp(name, 'i') };
+      filter.name = { name: { $regex: `.*${name}.*`, $options: 'i' } };
     }
     if (code) {
-      filter.code = { $regex: new RegExp(code, 'i') };
+      filter.code = { code: { $regex: `.*${code}.*`, $options: 'i' } };
     }
-    if (public) {
-      filter.public = public;
+    if (typeof isPublic === 'boolean') {
+      filter.isPublic = isPublic;
     }
     if (status) {
-      filter.status = status;
+      filter.status = { status: { $regex: `.*${status}.*`, $options: 'i' } };
     }
   }
 
@@ -63,6 +92,12 @@ const getParties = async (query) => {
   return { records: parties, total: totalItems };
 };
 
+/**
+ * Updates Party info
+ * @param {Partial<Party>} partyBody
+ * @param {string} partyId
+ * @returns
+ */
 const updatePartyById = async (partyBody, partyId) => {
   const party = await getPartyById(partyId);
 
@@ -75,6 +110,12 @@ const updatePartyById = async (partyBody, partyId) => {
   return party;
 };
 
+/**
+ * Updates Party Status
+ * @param {string} partyId
+ * @param {string} status
+ * @returns
+ */
 const patchPartyStatusById = async (partyId, status) => {
   const party = await getPartyById(partyId);
   if (!party) {

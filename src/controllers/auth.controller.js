@@ -7,8 +7,15 @@ const { authService, tokenService, refreshTokenService } = require('../services'
 const cookieUtils = require('../utils/cookieUtils');
 const dateUtils = require('../utils/dateUtils');
 
+/** @typedef {import('../models/user.model').User} User */
+
+/**
+ * Utility function to create user tokens: auth token and refresh token
+ * @param {User} user
+ * @returns
+ */
 const createUserTokens = async (user) => {
-  const userId = user._id;
+  const userId = user._id.toString();
 
   const authToken = tokenService.generateAuthToken(userId);
   const latestRefreshToken = await refreshTokenService.getLatestRefreshTokenByUserId(userId);
@@ -21,6 +28,9 @@ const createUserTokens = async (user) => {
   return { token: authToken, refreshToken };
 };
 
+/**
+ * Register a new user
+ */
 const registerUser = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.registerUser(email, password);
@@ -31,6 +41,9 @@ const registerUser = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ ...user.toJSON(), token });
 });
 
+/**
+ * Login user with email and password
+ */
 // Todo: Create cache db for logged in users for activity?
 const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -43,6 +56,9 @@ const loginUserWithEmailAndPassword = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ ...user.toJSON(), token });
 });
 
+/**
+ * Refresh user auth token
+ */
 const refreshUserAuthToken = catchAsync(async (req, res, next) => {
   const handleUnauthorized = () => {
     res.cookie(TOKEN.REFRESH_COOKIE, '', cookieUtils.getCookieOptionsToExpire());
@@ -60,7 +76,7 @@ const refreshUserAuthToken = catchAsync(async (req, res, next) => {
   }
 
   await refreshTokenService.revokeRefreshTokenById(refreshTokenFromDb._id);
-  const userId = refreshTokenFromDb._userId;
+  const userId = refreshTokenFromDb._userId.toString();
   const authToken = tokenService.generateAuthToken(userId);
   const refreshToken = await refreshTokenService.createRefreshTokenByUserId(userId);
 
@@ -68,6 +84,9 @@ const refreshUserAuthToken = catchAsync(async (req, res, next) => {
   res.status(httpStatus.OK).send({ token: authToken });
 });
 
+/**
+ * Get info of the requester
+ */
 const me = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const user = await User.findById(userId);
@@ -75,6 +94,9 @@ const me = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(user.toJSON());
 });
 
+/**
+ * Logout user
+ */
 // Todo: Session?
 const logoutUser = catchAsync(async (req, res) => {
   const userId = req.user._id;

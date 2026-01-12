@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const toJSON = require('./plugins/toJSON');
-const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES, SEXES } = require('../constants');
+const { USER_TYPE, USER_TYPES, STATUSES, STATUS, SEXES } = require('../constants');
+
+/** @typedef {import('../types').IPartyLog} IPartyLog */
 
 /**
  * @typedef {Object} OAuth
- * @property {OAUTH_TYPE} serviceType
  * @property {mongoose.Types.ObjectId} _oauthId
  */
 
@@ -73,23 +74,31 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, OAUTH_TYPE, OAUTH_TYPES, SEXES 
 
 /**
  * @typedef {Object} User
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} email
  * @property {string} [password]
- * @property {USER_TYPE} type
- * @property {STATUS} status
+ * @property {string} type
+ * @property {string} status
  * @property {OAuth} [oauth]
  * @property {Character} [character]
  * @property {Stats} [stats]
  * @property {Equipment} [equipment]
  * @property {Preferences} [preferences]
  * @property {Flags} [flags]
- *
+ * @property {IPartyLog} [party]
+ * @property {Object} [updatedBy]
  */
 
-/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, User> & User} UserDocument */
+/** @typedef {mongoose.Document & User & UserMethods} UserDocument */
 
-/** @type {mongoose.Schema<User>} */
-const userSchema = mongoose.Schema(
+/**
+ * @typedef {Object} UserMethods
+ * @property {(password: string) => Promise<boolean>} isPasswordMatch
+ * @property {(email: string) => Promise<boolean>} isEmailTaken
+ */
+
+/** @type {mongoose.Schema<UserDocument>} */
+const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
@@ -123,13 +132,13 @@ const userSchema = mongoose.Schema(
       default: STATUS.ACTIVE,
       enum: STATUSES,
     },
-    oauth: {
-      serviceType: {
-        type: String,
-        enum: OAUTH_TYPES,
-      },
-      _oauthId: String,
-    },
+    // oauth: {
+    //   serviceType: {
+    //     type: String,
+    //     enum: OAUTH_TYPES,
+    //   },
+    //   _oauthId: String,
+    // },
     character: {
       name: String,
       imageUrl: String, // ? for the meantime; in the future, we will have layered images using pixi js for much more customization
@@ -197,9 +206,12 @@ const userSchema = mongoose.Schema(
         default: false,
       },
     },
-    _partyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Party',
+    party: {
+      name: String,
+      partyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Party',
+      },
     },
     updatedBy: {
       name: String,
@@ -216,11 +228,24 @@ const userSchema = mongoose.Schema(
 
 userSchema.plugin(toJSON);
 
+/**
+ * Method to check if email is taken
+ * @this {mongoose.Model<UserDocument>}
+ * @param {string} email
+ * @param {string} excludeUserId
+ * @returns {Promise<boolean>}
+ */
 userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
   return !!user;
 };
 
+/**
+ * Method to check if password matches the user's password
+ * @this {UserDocument}
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
 userSchema.methods.isPasswordMatch = async function (password) {
   const user = this;
   return bcrypt.compare(password, user.password);
@@ -234,7 +259,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-/** @type {mongoose.Model<User>} */
+/** @type {mongoose.Model<UserDocument>} */
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

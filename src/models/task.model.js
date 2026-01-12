@@ -1,11 +1,11 @@
 //@ts-check
 const mongoose = require('mongoose');
 const { TASK } = require('../constants');
-const toJSONExcludeId = require('./plugins/toJSONExcludeId');
+// const toJSONExcludeId = require('./plugins/toJSONExcludeId');
 
 /**
  * @typedef {Object} Task
- * @property {string} id
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} name
  * @property {string} [description]
  * @property {string} type
@@ -19,7 +19,7 @@ const toJSONExcludeId = require('./plugins/toJSONExcludeId');
  * @property {Array<any>} history
  */
 
-/** @typedef {mongoose.Document<mongoose.Types.ObjectId, {}, Task> & Task} TaskDocument */
+/** @typedef {mongoose.Document & Task} TaskDocument */
 
 /** @type {mongoose.Schema<Task>} */
 const taskSchema = new mongoose.Schema(

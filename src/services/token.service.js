@@ -4,19 +4,34 @@ const httpStatus = require('http-status').status;
 const { User } = require('../models');
 const { STATUS, TOKEN_TYPE } = require('../constants');
 const config = require('../config/config');
-const crypto = require('crypto');
 const ApiError = require('../utils/ApiError');
-const stringUtils = require('../utils/stringUtils');
+const { default: mongoose } = require('mongoose');
 
+/** @typedef {import('../models/').RefreshToken} RefreshToken */
+/** @typedef {import('../models/').User} User */
+/** @typedef {import('../types').IJWTPayload} IJWTPayload */
+
+/**
+ * Verify JWT token
+ * @param {string} token
+ * @param {string} secret
+ * @returns {IJWTPayload | string}
+ */
 const verifyToken = (token, secret = config.jwt.secret) => {
   return jwt.verify(token, secret);
 };
 
+/**
+ * Verify reset password token
+ * @param {string} token
+ * @returns {Promise<User>}
+ * @throws {ApiError} if reset token expired, user not found or user is deleted or inactive
+ */
 const verifyResetPasswordToken = async (token) => {
   let payload;
   try {
     payload = verifyToken(token, config.jwt.resetPasswordSecret);
-    if (payload.type !== TOKEN_TYPE.CHANGE_PASSWORD) {
+    if (typeof payload === 'string' || payload.type !== TOKEN_TYPE.CHANGE_PASSWORD) {
       throw new Error('Incorrect token was used');
     }
   } catch (e) {
@@ -40,6 +55,14 @@ const verifyResetPasswordToken = async (token) => {
   return user;
 };
 
+/**
+ * Generate JWT token
+ * @param {string} userId
+ * @param {moment.Moment} expires
+ * @param {string} tokenType
+ * @param {any} args
+ * @returns {string}
+ */
 const generateToken = (userId, expires, tokenType, args) => {
   const payload = {
     sub: userId,
@@ -52,6 +75,11 @@ const generateToken = (userId, expires, tokenType, args) => {
   return jwt.sign(payload, config.jwt.secret);
 };
 
+/**
+ * Generate auth token
+ * @param {string} userId
+ * @returns {string}
+ */
 const generateAuthToken = (userId) => {
   const accessTokenExpires = moment().add(config.jwt.authTokenExpirationMins, 'minutes');
   const token = generateToken(userId, accessTokenExpires, TOKEN_TYPE.ACCESS);
@@ -59,6 +87,11 @@ const generateAuthToken = (userId) => {
   return token;
 };
 
+/**
+ * Generate reset password token
+ * @param {string} userId
+ * @returns {string}
+ */
 const generateResetPasswordToken = (userId) => {
   const expires = moment().add(config.jwt.resetPasswordExpirationMins, 'minutes');
   return generateToken(userId, expires, TOKEN_TYPE.CHANGE_PASSWORD);

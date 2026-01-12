@@ -2,24 +2,33 @@
 const mongoose = require('mongoose');
 const { ITEM, STATUS, STATUSES } = require('../constants');
 
+/** @typedef {import('../types').IUserLog} IUserLog */
+
 /**
  * @typedef {Object} Item
+ * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} name
  * @property {string} [modelName]
  * @property {string} description
  * @property {string} [texture]
  * @property {string} [icon]
  * @property {string} type
- * @property {string} [tags]
+ * @property {string[]} [tags]
  * @property {Object} [attributes]
  * @property {Object} [usageAttributes]
- * @property {string} [cost]
- * @property {string} maxStackSize
+ * @property {number} [cost]
+ * @property {number} [maxStackSize]
  * @property {Array<string>} sources
  * @property {Array<Object>} baseStats
  * @property {Array<Object>} rollRanges
+ * @property {IUserLog} [updatedBy]
+ * @property {IUserLog} [createdBy]
+ * @property {string} status
  */
 
+/** @typedef {mongoose.Document & Item} ItemDocument */
+
+/** @type {mongoose.Schema<ItemDocument>} */
 const itemSchema = new mongoose.Schema(
   {
     name: {
@@ -73,15 +82,21 @@ const itemSchema = new mongoose.Schema(
       type: Number,
     },
     tags: {
-      type: mongoose.Schema.Types.Array, // ['tag1', 'tag2']
+      type: [String], // ['tag1', 'tag2']
     },
     createdBy: {
       name: String,
-      userId: mongoose.Schema.Types.ObjectId,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     },
     updatedBy: {
       name: String,
-      userId: mongoose.Schema.Types.ObjectId,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     },
     status: {
       type: String,
@@ -94,6 +109,7 @@ const itemSchema = new mongoose.Schema(
   },
 );
 
+/** @type {mongoose.Model<ItemDocument>} */
 const Item = mongoose.model('Item', itemSchema);
 
 module.exports = Item;

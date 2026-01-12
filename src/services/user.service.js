@@ -8,13 +8,15 @@ const mongoose = require('mongoose');
 /** @typedef {import('../models/user.model').UserDocument} UserDocument */
 
 /**
- *
+ * Create User
  * @param {Partial<User>} userBody user document body
  * @returns {Promise<UserDocument>}
  */
 const createUser = async (userBody) => {
+  const USER = new User();
+
   try {
-    if (await User.isEmailTaken(userBody.email)) {
+    if (await USER.isEmailTaken(userBody.email)) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
     }
 
@@ -29,6 +31,7 @@ const createUser = async (userBody) => {
 };
 
 /**
+ * Update User by ID
  * @param {mongoose.Types.ObjectId} userId user id
  * @param {Partial<User>} userBody user new document body
  * @returns {Promise<UserDocument>}
@@ -45,7 +48,7 @@ const updateUserById = async (userId, userBody) => {
 };
 
 /**
- *
+ * Get User by ID
  * @param {mongoose.Types.ObjectId} userId user document id
  * @returns {Promise<UserDocument>}
  */
@@ -57,7 +60,7 @@ const getUserById = async (userId) => {
 };
 
 /**
- *
+ * Get Users
  * @param {USER_TYPE} [userType] user type
  * @param {STATUS} [userStatus] user status
  * @returns {Promise<UserDocument[]>}
@@ -74,7 +77,7 @@ const getUsers = async (userType, userStatus) => {
 };
 
 /**
- *
+ * Get User by OAuth
  * @param {string} oauthId oauth id
  * @param {string} oauthService oauth service type //Todo: Add enum consts
  * @param {string} email
@@ -89,9 +92,9 @@ const getUserByOAuth = async (oauthId, oauthService, email) => {
 };
 
 /**
- *
+ * Patch User Status by ID
  * @param {mongoose.Types.ObjectId} userId user document id
- * @param {STATUS} userStatus user status to update
+ * @param {string} userStatus user status to update
  * @returns {Promise<UserDocument>}
  */
 const patchUserStatusById = async (userId, userStatus) => {
@@ -107,7 +110,7 @@ const patchUserStatusById = async (userId, userStatus) => {
 };
 
 /**
- *
+ * Get User by Email
  * @param {string} email
  * @returns {Promise<UserDocument>}
  */

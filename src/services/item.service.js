@@ -4,6 +4,14 @@ const { Item } = require('../models');
 const { ITEM } = require('../constants');
 const stringUtils = require('../utils/stringUtils');
 
+/** @typedef {import('../models/item.model').Item} Item */
+/** @typedef {import('../models/item.model').ItemDocument} ItemDocument */
+
+/**
+ * Creates Item Model Name based on Item Name and Type
+ * @param {Item} item
+ * @returns {string}
+ */
 const createItemModelName = (item) => {
   if (!item) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Item is required');
@@ -14,6 +22,11 @@ const createItemModelName = (item) => {
   return `${index}_${lowercased}`;
 };
 
+/**
+ * Creates an item
+ * @param {Item} itemBody
+ * @returns {Promise<ItemDocument>}
+ */
 const createItem = async (itemBody) => {
   const modelName = createItemModelName(itemBody);
 
@@ -29,6 +42,12 @@ const createItem = async (itemBody) => {
   return item;
 };
 
+/**
+ * Updates an item by ID
+ * @param {string} itemId
+ * @param {Item} itemBody
+ * @returns {Promise<ItemDocument>}
+ */
 const updateItemById = async (itemId, itemBody) => {
   const item = await getItemById(itemId);
 
@@ -55,18 +74,33 @@ const updateItemById = async (itemId, itemBody) => {
   return item;
 };
 
+/**
+ * Get Item by ID
+ * @param {string} itemId
+ * @returns {Promise<ItemDocument>}
+ */
 const getItemById = async (itemId) => {
   return Item.findOne({
     _id: itemId,
   });
 };
 
+/**
+ * Get Item by Model Name
+ * @param {string} modelName
+ * @returns {Promise<ItemDocument>}
+ */
 const getItemByModelName = async (modelName) => {
   return Item.findOne({
     modelName,
   });
 };
 
+/**
+ * Get Items with request.query
+ * @param {any} query
+ * @returns {Promise<{ records: ItemDocument[], total: number }>}
+ */
 const getItems = async (query) => {
   const { pageIndex, pageSize, sort, search, name, type, tags, status } = query;
 
@@ -82,16 +116,16 @@ const getItems = async (query) => {
     ];
   } else {
     if (name) {
-      filter.name = { name: { $regex: `.*${searchRegex}.*`, $options: 'i' } };
+      filter.name = { name: { $regex: `.*${name}.*`, $options: 'i' } };
     }
     if (type) {
-      filter.type = { type: { $regex: `.*${searchRegex}.*`, $options: 'i' } };
+      filter.type = { type: { $regex: `.*${type}.*`, $options: 'i' } };
     }
     if (tags) {
-      filter.tags = { tags: { $regex: `.*${searchRegex}.*`, $options: 'i' } };
+      filter.tags = { tags: { $regex: `.*${tags}.*`, $options: 'i' } };
     }
     if (status) {
-      filter.status = { status: { $regex: `.*${searchRegex}.*`, $options: 'i' } };
+      filter.status = { status: { $regex: `.*${status}.*`, $options: 'i' } };
     }
   }
 
