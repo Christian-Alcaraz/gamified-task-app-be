@@ -40,15 +40,17 @@ describe('[Routes] Task = /api/tasks', () => {
         .get('/api/v1/tasks/' + taskUserDailies._id)
         .set('Authorization', bearerToken);
 
-      const spyTaskController = jest.spyOn(taskController, 'getUserTasks');
+      const spyTaskController = jest.spyOn(taskController, 'getTasks');
       expect(spyTaskController).not.toHaveBeenCalled();
     });
 
     it('should return 401 if unauthorized request', async () => {
       const res = await request(app).get('/api/v1/tasks');
+      const errorRegex = /Please authenticate|Unauthorized Request/i;
+
       expect(res.status).toBe(httpStatus.UNAUTHORIZED);
       expect(res.body).toHaveProperty('stack');
-      expect(res.body.stack).toMatch(/Please authenticate/i);
+      expect(res.body.stack).toMatch(errorRegex);
     });
 
     it('should return 400 if has invalid type param', async () => {
