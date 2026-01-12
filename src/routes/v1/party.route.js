@@ -16,5 +16,6 @@ router
 // router.patch('/status', validate(partyValidation.patchPartyStatusById), partyController.patchPartyStatusById);
 router.put('/:partyId', validate(partyValidation.updatePartyById), partyController.updatePartyById);
 router.get('/:partyId', validate(partyValidation.getPartyById), partyController.getPartyById);
+router.get('/code/:code', validate(partyValidation.getPartyByCode), partyController.getPartyByCode);
 
 module.exports = router;
