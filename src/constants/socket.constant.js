@@ -5,6 +5,7 @@ const SOCKET_TYPE = {
   SUCCESS: 'success',
   TOKEN_EXPIRED: 'token_expired',
   REAUTH: 'reauthenticate',
+  DISCONNECT: 'disconnect',
 };
 
 const SOCKET_TARGET = {
@@ -32,10 +33,21 @@ const WS_STATUS = {
   INTERNAL_ERROR: 1011,
 };
 
+const SOCKET_TYPES = Object.values(SOCKET_TYPE);
+const SOCKET_TARGETS = Object.values(SOCKET_TARGET);
+const SOCKET_SUB_TARGETS = Object.values(SOCKET_SUB_TARGET);
+const WS_STATUSES = Object.values(WS_STATUS);
+const CLIENT_STATUSES = Object.values(CLIENT_STATUS);
+
 module.exports = {
   SOCKET_TYPE,
+  SOCKET_TYPES,
   SOCKET_TARGET,
+  SOCKET_TARGETS,
   SOCKET_SUB_TARGET,
+  SOCKET_SUB_TARGETS,
   WS_STATUS,
+  WS_STATUSES,
   CLIENT_STATUS,
+  CLIENT_STATUSES,
 };
