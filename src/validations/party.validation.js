@@ -31,6 +31,11 @@ const validation = {
       itemId: JoiObjectId().required().description('Party ID'),
     }),
   },
+  getPartyByCode: {
+    params: Joi.object().keys({
+      code: Joi.string().required().description('Party Code'),
+    }),
+  },
   getParties: {
     query: Joi.object().keys({
       pageIndex: Joi.number().description('Page number'),
