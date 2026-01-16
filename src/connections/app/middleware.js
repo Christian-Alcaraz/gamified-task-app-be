@@ -10,6 +10,7 @@ const config = require('../../config/config');
 const morgan = require('../../config/morgan');
 const { jwtStrategy } = require('../../config/passport');
 const { errorConverter, errorHandler } = require('../../middlewares/error');
+/** @typedef {import('express').Express} Express */
 
 class Middleware {
   /**
@@ -42,7 +43,7 @@ class Middleware {
       }),
     );
     app.options('*', cors());
-
+    // @ts-expect-error helmet is callable at runtime
     app.use(helmet());
     // const helmetDirectives = helmet.contentSecurityPolicy.getDefaultDirectives();
     // whitelistedOrigins

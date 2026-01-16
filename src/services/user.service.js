@@ -49,7 +49,7 @@ const updateUserById = async (userId, userBody) => {
 
 /**
  * Get User by ID
- * @param {mongoose.Types.ObjectId} userId user document id
+ * @param {mongoose.Types.ObjectId | string} userId user document id
  * @returns {Promise<UserDocument>}
  */
 const getUserById = async (userId) => {
@@ -61,8 +61,8 @@ const getUserById = async (userId) => {
 
 /**
  * Get Users
- * @param {USER_TYPE} [userType] user type
- * @param {STATUS} [userStatus] user status
+ * @param {string} [userType] user type
+ * @param {string} [userStatus] user status
  * @returns {Promise<UserDocument[]>}
  */
 const getUsers = async (userType, userStatus) => {

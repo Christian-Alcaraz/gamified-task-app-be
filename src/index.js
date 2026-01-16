@@ -1,5 +1,5 @@
 const logger = require('./config/logger');
-const Mongo = require('./connections/mongo');
+const { MongoFactory } = require('./connections/mongo');
 const ExpressApp = require('./connections/app');
 const State = require('./utils/state');
 const WebsocketServer = require('./connections/websocket');
@@ -29,16 +29,16 @@ const listenForSignals = () => {
 
 const main = async () => {
   logger.info('[Server]:: Starting application...');
-  const mongo = await Mongo.create();
+  const mongo = await MongoFactory.create();
   const app = new ExpressApp();
-  const socket = new WebsocketServer();
+  const websocketServer = new WebsocketServer();
 
   State.mongo = mongo;
   State.app = app;
-  State.socket = socket;
+  State.websocketServer = websocketServer;
 
   app.init();
-  socket.init(app.server);
+  websocketServer.init(app.server);
   listenForSignals();
 };
 

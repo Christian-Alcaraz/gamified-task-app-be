@@ -15,10 +15,10 @@ const { default: mongoose } = require('mongoose');
  * Verify JWT token
  * @param {string} token
  * @param {string} secret
- * @returns {IJWTPayload | string}
+ * @returns {IJWTPayload}
  */
 const verifyToken = (token, secret = config.jwt.secret) => {
-  return jwt.verify(token, secret);
+  return /** @type {IJWTPayload} */ (jwt.verify(token, secret));
 };
 
 /**

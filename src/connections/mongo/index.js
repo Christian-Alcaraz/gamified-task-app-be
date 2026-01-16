@@ -3,7 +3,9 @@ const config = require('../../config/config');
 const logger = require('../../config/logger');
 const seed = require('../../seeds');
 const State = require('../../utils/state');
-
+/**
+ * @class Mongo
+ */
 class Mongo {
   async init() {
     return new Promise((resolve, reject) => {
@@ -44,9 +46,11 @@ class Mongo {
   }
 }
 
-module.exports = class MongoFactory {
+class MongoFactory {
+  /** @type {Mongo | undefined} */
   static instance = undefined;
 
+  /** @returns {Promise<Mongo>} */
   static async create() {
     if (!MongoFactory.instance) {
       await MongoFactory.createServer();
@@ -58,4 +62,9 @@ module.exports = class MongoFactory {
     MongoFactory.instance = new Mongo();
     await MongoFactory.instance.init();
   }
+}
+
+module.exports = {
+  Mongo,
+  MongoFactory,
 };
