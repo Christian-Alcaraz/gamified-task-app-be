@@ -46,10 +46,14 @@ class Middleware {
    * @throws {ApiError}
    */
   validateSocketMessage(schema, data) {
-    const object = _.pick(data, schema);
+    const object = _.pick(data, Object.keys(schema));
     const { value, error } = Joi.compile(schema)
       .prefs({ errors: { label: 'key' }, abortEarly: false })
       .validate(object);
+
+    console.info('Validation Schema Keys:', Object.keys(schema));
+    console.info('Validation Schema:', object);
+    console.info('Validation Result:', { value, error });
 
     if (error) {
       const errorMessage = error.details

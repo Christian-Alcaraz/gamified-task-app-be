@@ -42,8 +42,8 @@ class State {
 
   kill() {
     if (this.mongo) /** @type {Mongo} */ (this.mongo).disconnect();
-    if (this.app) this.app.close();
     if (this.websocketServer) this.websocketServer.close();
+    if (this.app) this.app.close();
     // this.server.close();
     // Close websocket server if exists
   }

@@ -6,6 +6,7 @@ const RefreshToken = require('./refreshToken.model');
 const Party = require('./party.model');
 const Message = require('./message.model');
 const ChatRoom = require('./chatRoom.model');
+const Conversation = require('./conversation.model');
 
 module.exports = {
   User,
@@ -16,4 +17,5 @@ module.exports = {
   Party,
   Message,
   ChatRoom,
+  Conversation,
 };

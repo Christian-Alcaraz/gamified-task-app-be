@@ -1,4 +1,8 @@
 const WebsocketService = require('./service');
+const State = require('../../utils/state');
+const ApiError = require('../../utils/ApiError');
+const { SOCKET_TYPE } = require('../../constants');
+const httpStatus = require('http-status').status;
 
 /** @typedef {import('../../models/user.model').UserDocument} UserDocument */
 /** @typedef {import('./types').ISocketInMessage} ISocketInMessage */
@@ -28,7 +32,40 @@ class Controller {
    * @param {UserDocument} user
    */
   async sendMessage(data, user) {
-    await this.service.sendMessage(user._id, data.receiver, data.chatRoomId, data.body);
+    if (data.receiver === user._id) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot send message to yourself');
+    }
+    await this.service.sendMessage(user._id, data.receiver, data.conversationId, data.body);
+
+    // State.websocketServer.sendToUser(
+    //   data.receiver,
+    //   { body: data.body, sender: user._id, receiver: data.receiver, conversationId: data.conversationId },
+    //   SOCKET_TYPE.MESSAGE,
+    // );
+  }
+
+  /**
+   *
+   * @param {ISocketGetMessageBody} data
+   * @param {UserDocument} user
+   */
+  async getMessages(data, user) {
+    const messages = this.service.getMessages(data.conversationId, data.page);
+
+    State.websocketServer.sendToUser(user._id, { messages, conversationId: data.conversationId }, SOCKET_TYPE.SUCCESS);
+  }
+
+  /**
+   * Read message
+   * @param {ISocketReadMessageBody} data
+   * @param {UserDocument} user
+   */
+  async readMessage(data, user) {
+    if (data.userId !== user._id) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot read message of other user');
+    }
+
+    await this.service.readMessage(data.messageId, user._id);
   }
 }
 

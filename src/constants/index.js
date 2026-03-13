@@ -6,6 +6,7 @@ const config = require('./config.constant');
 const stat = require('./stats.constant');
 const socket = require('./socket.constant');
 const party = require('./party.constant');
+const conversation = require('./conversation.constant');
 
 const GAME = require('./game.constant');
 const TASK = require('./task.constant');
@@ -22,6 +23,7 @@ module.exports = {
   ...config,
   ...socket,
   ...party,
+  ...conversation,
   TASK,
   GAME,
   CHARACTER,

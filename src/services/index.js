@@ -7,6 +7,9 @@ const configService = require('./config.service');
 const itemService = require('./item.service');
 const refreshTokenService = require('./refreshToken.service');
 const partyService = require('./party.service');
+const messageService = require('./message.service');
+const chatRoomService = require('./chatRoom.service');
+const conversationService = require('./conversation.service');
 
 module.exports = {
   authService,
@@ -18,4 +21,7 @@ module.exports = {
   itemService,
   refreshTokenService,
   partyService,
+  messageService,
+  chatRoomService,
+  conversationService,
 };

@@ -1,44 +1,49 @@
 const mongoose = require('mongoose');
+const { CONVERSATION_TYPES } = require('../constants');
 
 /** @typedef {import('../types').IUserLog} IUserLog */
 
 /**
- * @typedef {Object} ChatRoomMessage
+ * @typedef {Object} ConversationMessage
  * @property {string} body
  * @property {string} messageId
  * @property {IUserLog} createdBy
  * @property {IUserLog} [receivedBy]
  * @property {Date} [createdAt]
  * @property {Date} [updatedAt]
- * @property {string} _chatRoomId
+ * @property {string} _conversationId
  */
 
 /**
- * @typedef {Object} ChatRoom
+ * @typedef {Object} Conversation
  * @property {string} _id
  * @property {string} name
- * @property {ChatRoomMessage[]} [messages]
- * @property {ChatRoomMessage} [lastMessage]
+ * @property {string} type
+ * @property {ConversationMessage[]} [messages]
+ * @property {ConversationMessage} [lastMessage]
  * @property {(IUserLog & { role?: string })[]} [participants]
  * @property {IUserLog} [updatedBy]
  * @property {IUserLog} [createdBy]
  * @property {boolean} isGroupChat
  */
 
-/** @typedef {mongoose.Document & ChatRoom} ChatRoomDocument */
+/** @typedef {mongoose.Document & Conversation} ConversationDocument */
 
-const USER_LOG_PROPS = {
-  name: {
-    type: String,
-    ref: 'User',
+const USER_LOG_PROPS = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      ref: 'User',
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  },
-};
+  { _id: false },
+);
 
-const CHAT_ROOM_MESSAGE_PROPS = {
+const MESSAGE_PROPS = {
   body: {
     type: String,
     required: true,
@@ -57,20 +62,25 @@ const CHAT_ROOM_MESSAGE_PROPS = {
   updatedAt: {
     type: Date,
   },
-  _chatRoomId: {
+  _conversationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Chat',
     required: true,
   },
 };
 
-/** @type {mongoose.Schema<ChatRoomDocument>} */
-const chatRoomSchema = new mongoose.Schema(
+/** @type {mongoose.Schema<ConversationDocument>} */
+const conversationSchema = new mongoose.Schema(
   {
-    lastMessage: CHAT_ROOM_MESSAGE_PROPS,
+    lastMessage: mongoose.Schema.Types.Mixed,
     messages: {
-      type: [CHAT_ROOM_MESSAGE_PROPS],
+      type: [MESSAGE_PROPS],
       default: [],
+    },
+    type: {
+      type: String,
+      enum: CONVERSATION_TYPES,
+      required: true,
     },
     name: {
       type: String,
@@ -81,7 +91,7 @@ const chatRoomSchema = new mongoose.Schema(
       default: false,
     },
     createdBy: {
-      type: USER_LOG_PROPS,
+      type: mongoose.Schema.Types.Mixed,
     },
     participants: {
       type: [USER_LOG_PROPS],
@@ -93,7 +103,7 @@ const chatRoomSchema = new mongoose.Schema(
   },
 );
 
-/** @type {mongoose.Model<ChatRoomDocument>} */
-const ChatRoom = mongoose.model('ChatRoom', chatRoomSchema);
+/** @type {mongoose.Model<ConversationDocument>} */
+const Conversation = mongoose.model('Conversation', conversationSchema);
 
-module.exports = ChatRoom;
+module.exports = Conversation;

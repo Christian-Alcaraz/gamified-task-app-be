@@ -76,6 +76,7 @@ const { USER_TYPE, USER_TYPES, STATUSES, STATUS, SEXES } = require('../constants
  * @typedef {Object} User
  * @property {mongoose.Types.ObjectId} [_id]
  * @property {string} email
+ * @property {string} [name]
  * @property {string} [password]
  * @property {string} type
  * @property {string} status
@@ -110,6 +111,7 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    name: { type: String },
     password: {
       type: String,
       required: true,

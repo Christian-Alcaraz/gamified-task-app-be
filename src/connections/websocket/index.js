@@ -39,7 +39,7 @@ class WebsocketServer {
       httpCompression: true,
       cors: '*:*',
     };
-    // @ts-expect-error -
+    // @ts-expect-error - this is working, just error linter complains
     this.io = new SocketIOServer(httpServer);
     this.middleware = new Middleware();
     this.router = new Router(this.middleware);
@@ -264,7 +264,7 @@ class WebsocketServer {
     const user = this.users.find((user) => user.userId === userId);
 
     if (!user) {
-      logger.error('This must not HAPPEN, user was not found from active pool');
+      logger.error('This must not HAPPEN, user was not found from active pool; This still happening, investigate why');
       return;
     }
 

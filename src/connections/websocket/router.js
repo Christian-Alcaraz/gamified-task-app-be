@@ -82,16 +82,17 @@ class Router {
    * @param {ISocket} socket
    */
   sendMessage(payload, socket) {
+    console.log(payload);
     this.middleware.validateSocketMessage(validation.sendMessage, payload);
 
     /** @type {ISocketSendMessageDto} */
-    let prepared = { body: undefined, receiver: undefined, sender: undefined, chatRoomId: undefined };
+    let prepared = { body: undefined, receiver: undefined, sender: undefined, conversationId: undefined };
 
     prepared = {
       body: payload.message,
       receiver: payload.target,
       sender: socket.userId,
-      chatRoomId: payload.chatRoomId,
+      conversationId: payload.conversationId,
     };
 
     socket.controller

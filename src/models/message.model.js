@@ -10,8 +10,8 @@ const mongoose = require('mongoose');
  * @property {IUserLog} receivedBy
  * @property {IUserLog} [updatedBy]
  * @property {IUserLog} [createdBy]
- * @property {Date} [createdAt]
- * @property {string | mongoose.Types.ObjectId} _chatId
+ * @property {string} [createdAt]
+ * @property {string | mongoose.Types.ObjectId} _chatRoomId
  */
 
 /** @typedef {mongoose.Document & Message} MessageDocument */
@@ -47,6 +47,11 @@ const messageSchema = new mongoose.Schema(
         ref: 'User',
         required: true,
       },
+    },
+    _chatRoomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ChatRoom',
+      required: true,
     },
   },
   {

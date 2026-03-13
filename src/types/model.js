@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 /**
  * @typedef {Object} IUserLog
- * @property {string} name
- * @property {mongoose.Types.ObjectId} userId
+ * @property {string} [name]
+ * @property {string} [userId]
  */
 
 /**
  * @typedef {Object} IPartyLog
  * @property {string} name
- * @property {mongoose.Types.ObjectId} partyId
+ * @property {string} partyId
  */
 
 module.exports = {};

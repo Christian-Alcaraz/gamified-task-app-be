@@ -16,31 +16,35 @@
  * @property {string} sender
  * @property {string} receiver
  * @property {string} body
- * @property {string} chatRoomId
+ * @property {string} conversationId
  */
 
 /**
  * @typedef {Object} ISocketSendMessageBody
  * @property {string} target
  * @property {string} message
- * @property {string} chatRoomId
+ * @property {string} conversationId
  */
 
 /**
  * @typedef {Object} ISocketGetMessageBody
  * @property {number} page
+ * @property {string} conversationId
+ *
  */
 
 /**
  * @typedef {Object} ISocketGetDetailedBody
  * @property {number} page
  * @property {string} target
+ *
  */
 
 /**
  * @typedef {Object} ISocketReadMessageBody
- * @property {string} chatId
+ * @property {string} messageId
  * @property {string} userId
+ *
  */
 
 /**

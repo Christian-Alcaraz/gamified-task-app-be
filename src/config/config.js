@@ -24,6 +24,13 @@ const envVarsSchema = Joi.object()
     ADMIN_ID: Joi.string().required(),
     ADMIN_EMAIL: Joi.string().required(),
     ADMIN_PASSWORD: Joi.string().required(),
+
+    TEST_RECEIPIENT_ID: Joi.string().required(),
+    TEST_RECEIPIENT_EMAIL: Joi.string().required(),
+    TEST_RECEIPIENT_PASSWORD: Joi.string().required(),
+
+    TEST_CONVO_ID: Joi.string().required(),
+    TEST_CONVO_NAME: Joi.string().required(),
   })
   .unknown();
 
@@ -53,5 +60,14 @@ module.exports = {
     id: envVars.ADMIN_ID,
     email: envVars.ADMIN_EMAIL,
     password: envVars.ADMIN_PASSWORD,
+  },
+  testReceipient: {
+    id: envVars.TEST_RECEIPIENT_ID,
+    email: envVars.TEST_RECEIPIENT_EMAIL,
+    password: envVars.TEST_RECEIPIENT_PASSWORD,
+  },
+  testConversation: {
+    id: envVars.TEST_CONVO_ID,
+    name: envVars.TEST_CONVO_NAME,
   },
 };

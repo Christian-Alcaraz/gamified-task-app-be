@@ -9,8 +9,9 @@ const GAME_CORE = require('../utils/gameCore');
 /** @typedef {import('../models/user.model').UserDocument} UserDocument */
 /** @typedef {import('../models/task.model').TaskDocument} TaskDocument */
 
+//Todo: have separate method for updating user character
+
 /**
- *
  * @param {string} characterName
  * @returns
  */
@@ -58,7 +59,7 @@ const patchCreateUserCharacterById = async (userId, characterBody) => {
     toNextLevel: defaults.toNextLevel,
   };
 
-  Object.assign(user, { character: characterBody, stats });
+  Object.assign(user, { character: characterBody, stats, name: characterBody.name });
 
   await user.save();
   return user;
@@ -76,7 +77,11 @@ const updateUserCharacterById = async (userId, characterBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  Object.assign(user, { character: characterBody });
+  const { name: nameInUserModel } = user;
+  const hasNameChanged = characterBody.name && characterBody.name !== nameInUserModel;
+  const updateProps = hasNameChanged ? { name: characterBody.name } : {};
+
+  Object.assign(user, { character: characterBody, ...updateProps });
   await user.save();
   return user;
 };

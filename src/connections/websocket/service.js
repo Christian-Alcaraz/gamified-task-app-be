@@ -1,69 +1,46 @@
-const { Message, ChatRoom, User } = require('../../models');
 const ApiError = require('../../utils/ApiError');
-const mongoose = require('mongoose');
 const httpStatus = require('http-status').status;
+const { messageService, conversationService } = require('../../services');
 
 /** @typedef {import('../../models/chatRoom.model').ChatRoomDocument} ChatRoomDocument */
+/** @typedef {import('../../models/message.model').MessageDocument} MessageDocument */
+/** @typedef {import('../../models/conversation.model').ConversationDocument} ConversationDocument */
 
 class Service {
   /**
    * @param {string} senderId
    * @param {string} receiverId
    * @param {string} body
-   * @param {string} chatRoomId
+   * @param {string} conversationId
    */
-  async sendMessage(senderId, receiverId, chatRoomId, body) {
-    //Todo: Separate sendMessage for Group Chat Room and Private Chat Room
-    const sender = await User.findById(senderId);
-    const receiver = await User.findById(receiverId);
-
-    if (!sender || !receiver) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Sender/Receiver not Found');
+  async sendMessage(senderId, receiverId, conversationId, body) {
+    const messageBody = { body };
+    const conversation = await conversationService.getConversationById(conversationId);
+    if (!conversation) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Conversation not found');
     }
 
-    const senderUserLog = {
-      name: sender.name,
-      userId: sender._id,
-    };
+    const message = await messageService.createMessage(messageBody, senderId, receiverId, conversationId);
+    await conversationService.addMessageToConversationById(conversation._id, message._id);
+  }
 
-    const receiverUserLog = {
-      name: receiver.name,
-      userId: receiver._id,
-    };
+  /**
+   * @param {string} conversationId
+   * @param {number} page
+   * @returns
+   */
+  async getMessages(conversationId, page) {
+    return await conversationService.queryConversationMessages(conversationId, page);
+  }
 
-    /** @type {ChatRoomDocument} */
-    let chatRoom = await ChatRoom.findOne({ _id: chatRoomId });
-
-    //Todo: Create chatRoomService.createChatRoom()
-    if (!chatRoom) {
-      const participants = [senderUserLog, receiverUserLog];
-      chatRoom = await ChatRoom.create({
-        participants,
-        isGroupChat: true, //Todo: have option for creating Group Chat Room in createChatRoom()
-      });
-    }
-
-    //Todo: Create messageService.createMessage()
-    const messageBody = {
-      body,
-      receivedBy: receiverUserLog,
-      createdBy: senderUserLog,
-      _chatId: chatRoom._id,
-    };
-
-    const message = await Message.create(messageBody);
-    const newChatRoomMessage = {
-      body,
-      messageId: message._id,
-      sender: senderUserLog,
-      receiver: receiverUserLog,
-      createdAt: message.createdAt,
-      _chatId: chatRoom._id,
-    };
-
-    chatRoom.messages.push(newChatRoomMessage);
-    chatRoom.lastMessage = newChatRoomMessage;
-    await chatRoom.save();
+  /**
+   *
+   * @param {string} messageId
+   * @param {string} userId
+   * @returns {Promise<MessageDocument>}
+   */
+  async readMessage(messageId, userId) {
+    return await messageService.readMessage(messageId, userId);
   }
 }
 
