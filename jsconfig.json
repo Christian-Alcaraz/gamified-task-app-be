@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "alwaysStrict": false,
-    "allowJs": true,
-    "checkJs": true,
-    "target": "es2022",
-    "module": "commonjs"
-  }
-}
