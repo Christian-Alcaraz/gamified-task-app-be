@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
  * @property {IUserLog} [updatedBy]
  * @property {IUserLog} [createdBy]
  * @property {string} [createdAt]
- * @property {string | mongoose.Types.ObjectId} _chatRoomId
+ * @property {string | mongoose.Types.ObjectId} conversationId
  */
 
 /** @typedef {mongoose.Document & Message} MessageDocument */
@@ -48,7 +48,7 @@ const messageSchema = new mongoose.Schema(
         required: true,
       },
     },
-    _chatRoomId: {
+    conversationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ChatRoom',
       required: true,

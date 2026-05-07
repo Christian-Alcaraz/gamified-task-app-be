@@ -217,6 +217,10 @@ const addMessageToConversationById = async (conversationId, messageId) => {
 
   conversation.messages.push(denormalizedMessage);
   delete denormalizedMessage._conversationId;
+
+  console.log('Denormalized Message:', denormalizedMessage);
+  console.log('Last Messages:', conversation.lastMessage);
+
   conversation.lastMessage = denormalizedMessage;
 
   await conversation.save();
@@ -231,12 +235,21 @@ const addMessageToConversationById = async (conversationId, messageId) => {
 const queryConversationMessages = async (conversationId, page) => {
   const PAGE_SIZE = 10;
 
+  console.log('Querying messages for conversationId:', conversationId, 'page:', page);
+
   const conversation = await getConversationById(conversationId);
+
   if (!conversation) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Conversation not found');
   }
 
-  const messages = conversation.messages.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const messages = conversation.messages;
+  console.log('Messages TOTAL:', messages.length);
+  if (!messages || messages.length === 0) {
+    return [];
+  }
+
+  messages.sort((a, b) => b.createdAt - a.createdAt).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   return messages;
 };
 

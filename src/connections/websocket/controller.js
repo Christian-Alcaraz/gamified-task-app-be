@@ -50,9 +50,8 @@ class Controller {
    * @param {UserDocument} user
    */
   async getMessages(data, user) {
-    const messages = this.service.getMessages(data.conversationId, data.page);
-
-    State.websocketServer.sendToUser(user._id, { messages, conversationId: data.conversationId }, SOCKET_TYPE.SUCCESS);
+    const messages = await this.service.getMessages(data.conversationId, data.page);
+    return !messages || messages.length === 0 ? [] : messages;
   }
 
   /**

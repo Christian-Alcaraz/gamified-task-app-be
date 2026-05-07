@@ -28,6 +28,7 @@ const validation = {
   },
   getMessages: {
     page: Joi.number().required().description('Page number'),
+    conversationId: Joi.string().allow('', null).description('Conversation ID'),
   },
   readMessage: {
     chatId: Joi.string().required().description('Chat ID'),

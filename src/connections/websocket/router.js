@@ -82,7 +82,6 @@ class Router {
    * @param {ISocket} socket
    */
   sendMessage(payload, socket) {
-    console.log(payload);
     this.middleware.validateSocketMessage(validation.sendMessage, payload);
 
     /** @type {ISocketSendMessageDto} */
@@ -118,7 +117,24 @@ class Router {
    */
   readMessage(payload, socket) {}
 
-  getMessages(payload, socket) {}
+  /**
+   *
+   * @param {ISocketGetMessageBody} payload
+   * @param {ISocket} socket
+   */
+  getMessages(payload, socket) {
+    this.middleware.validateSocketMessage(validation.getMessages, payload);
+
+    socket.controller
+      .getMessages(payload, socket.user)
+      .then((messages) => {
+        socket.emit(SOCKET_TYPE.SUCCESS);
+        State.websocketServer.sendToUser(socket.userId, messages, SOCKET_TYPE.MESSAGE);
+      })
+      .catch((error) => {
+        this.handleError(error, socket);
+      });
+  }
 
   getUnreadMessages(payload, socket) {}
 }

@@ -33,12 +33,12 @@ const createMessage = async (messageBody, senderId, receiverId, conversationId) 
   }
 
   const senderUserLog = {
-    name: sender.name ?? sender.character.name,
+    name: sender.name ?? sender?.character?.name,
     userId: sender._id,
   };
 
   const receiverUserLog = {
-    name: receiver.name ?? receiver.character.name,
+    name: receiver.name ?? receiver?.character?.name,
     userId: receiver._id,
   };
 
@@ -48,7 +48,7 @@ const createMessage = async (messageBody, senderId, receiverId, conversationId) 
     read: false,
     createdBy: senderUserLog,
     receivedBy: receiverUserLog,
-    _chatRoomId: conversationId,
+    conversationId: conversationId,
   };
 
   const message = await Message.create(body);
@@ -75,15 +75,16 @@ const getMessagesByUserId = async (userId) => {
 
 /**
  * Get Messages by ChatRoom.Id w/o User.Id
- * @param {string} chatRoomId
+ * @param {string} conversationId
  * @param {string} [userId]
  * @returns {Promise<MessageDocument[]>}
  */
-const getMessagesByChatId = async (chatRoomId, userId) => {
-  const query = { _chatRoomId: chatRoomId };
+const getMessagesByChatId = async (conversationId, userId) => {
+  const query = {};
+  query['conversationId'] = conversationId;
 
   if (userId) {
-    query.$or = [
+    query['$or'] = [
       {
         receivedBy: {
           userId,
@@ -105,20 +106,24 @@ const getMessagesByChatId = async (chatRoomId, userId) => {
  * @returns {Promise<MessageDocument[]>}
  */
 const getUnreadMessagesByUserId = async (userId, query) => {
-  const { pageIndex, pageSize, sort, chatRoomId } = query;
+  const { pageIndex, pageSize, sort, conversationId } = query;
 
-  let filter = { read: false, receivedBy: { userId } };
+  let filter = {};
+  filter['read'] = false;
+  filter['receivedBy.userId'] = userId;
 
-  if (chatRoomId) {
-    filter._chatId = chatRoomId;
+  if (conversationId) {
+    filter['conversationId'] = conversationId;
   }
 
+  /** @type {Record<string, number>} */
   const sortBy = {};
+
   if (sort) {
     const [path, direction] = sort.split(':');
     sortBy[path] = direction === 'desc' ? -1 : 1;
   } else {
-    sortBy['createdAt'] = -1;
+    sortBy.createdAt = -1;
   }
 
   const messages = await Message.find(filter)
@@ -152,6 +157,10 @@ const readMessage = async (messageId, userId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
+  if (!user.character) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User character not found');
+  }
+
   message.updatedBy = {
     name: user.character.name,
     userId: user._id,
@@ -175,12 +184,17 @@ const updateMessageByIdAndUserId = async (messageId, userId, messageBody) => {
   }
 
   const user = await userService.getUserById(userId);
+
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
+  if (!user.character) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User character not found');
+  }
+
   message.updatedBy = {
-    name: user.character.name,
+    name: user?.character?.name,
     userId: user._id,
   };
 
